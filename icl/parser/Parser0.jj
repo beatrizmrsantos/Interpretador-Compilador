@@ -1,7 +1,8 @@
 PARSER_BEGIN(Parser)
 
-package BASE-0;
+package parser;
 import ast.*;
+import ast.arithmetic.*;
 import utils.Pair;
 import java.util.LinkedList;
 import java.util.List;

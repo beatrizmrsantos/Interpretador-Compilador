@@ -1,3 +1,5 @@
+package parser;
+
 import ast.ASTNode;
 import environment.EnvironmentCompiler;
 

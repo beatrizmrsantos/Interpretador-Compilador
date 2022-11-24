@@ -1,5 +1,6 @@
+package parser;
+
 import ast.*;
-import environment.EnvironmentInterpreter;
 import environment.EnvironmentValue;
 
 public class ICLInterpreter {
