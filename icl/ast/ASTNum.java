@@ -15,7 +15,7 @@ public class ASTNum implements ASTNode {
 //    }
 
     public ASTNum(int n) {
-        VInt val = new VInt(n);
+        val = new VInt(n);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class ICLInterpreter {
                 System.out.print("> ");
                 exp = parser.Start();
 
-                System.out.println( exp.eval(e) );
+                System.out.println( exp.eval(e).toStr() );
 
                 e.endScope();
 

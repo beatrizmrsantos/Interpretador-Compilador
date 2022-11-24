@@ -12,7 +12,7 @@ public class ASTBool implements ASTNode{
     VBool v;
 
     public ASTBool(boolean n) {
-        VBool v = new VBool(n);
+        v = new VBool(n);
     }
 
 //    @Override
