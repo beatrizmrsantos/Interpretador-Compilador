@@ -1,0 +1,122 @@
+PARSER_BEGIN(Parser)
+
+package BASE-0;
+import ast.*;
+import utils.Pair;
+import java.util.LinkedList;
+import java.util.List;
+
+/** ID lister.*/
+public class Parser {
+
+
+}
+
+PARSER_END(Parser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+| "\n"
+
+}
+
+TOKEN :
+{
+  < LET: ["l"]["e"]["t"] >
+  |
+  < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
+  |
+  < Num: (["0"-"9"]) + >
+  |
+  < PLUS : "+" >
+  |
+  < MINUS : "-">
+  |
+  < TIMES : "*">
+  |
+  < DIV : "/">
+  |
+  < LPAR : "(" >
+  |
+  < RPAR : ")" >
+  |
+  < RBR: "{" >
+  |
+  < LBR: "}" >
+  |
+  < EQ: "=" >
+  |
+  < PV: ";" >
+  |
+  < TERM: ";;" >
+
+}
+
+ASTNode Start():
+{ ASTNode t;}
+{
+   t = Exp() <TERM>
+   { return t; }
+}
+
+
+ASTNode Exp() :
+{ Token op;
+  ASTNode t1, t2; }
+{
+     t1=Term() ( ( op=<PLUS> | op=<MINUS> ) t2=Term() 
+                 { if (op.kind == PLUS) 
+        t1 = new ASTPlus(t1,t2);
+  else  t1 = new ASTSub(t1,t2);
+}
+               ) *
+     { return t1; } 
+}
+
+ASTNode Term() :
+{Token op;
+  ASTNode t1, t2;}
+{
+     t1 = Fact() ( ( op=<TIMES> | op=<DIV> ) t2 = Term() 
+ 		 { if (op.kind == TIMES)
+        t1 = new ASTMult(t1,t2);
+    else  t1 = new ASTDiv(t1,t2);
+     }
+		)?
+     { return t1; } 
+}
+
+ASTNode Fact() :
+{ Token n; 
+ASTNode t;
+List<Pair> l;}
+{
+   ( n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); } | <LPAR> t=Exp() <RPAR> | <MINUS> t=Fact() { t = new ASTNeg(t); }
+   | n=<Id> { t = new ASTId(n.image); }
+   | <RBR> { l = new LinkedList<>(); }
+                ( <LET> n=<Id> <EQ> t=Exp() <PV> { l.add(new Pair(n.image,t)); } )+
+                t=Exp() <LBR>
+                {return new ASTDef(l,t);}
+   ){ return t; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

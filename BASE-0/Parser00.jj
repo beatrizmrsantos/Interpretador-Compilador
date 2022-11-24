@@ -1,0 +1,85 @@
+PARSER_BEGIN(Parser)
+
+
+/** ID lister. */
+public class Parser {
+
+  /** Main entry point. */
+}
+
+PARSER_END(Parser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+}
+
+TOKEN :
+{
+  < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
+  |
+  < Num: (["0"-"9"]) + >
+  |
+  < PLUS : "+" >
+  |
+  < MINUS : "-">
+  |
+  < TIMES : "*">
+  |
+  < DIV : "/">
+  |
+  < LPAR : "(" >
+  |
+  < RPAR : ")" >
+  |
+  < EL: "\n" >
+}
+
+void Start() :
+{}
+{
+   Exp() <EL>
+}
+
+void Exp() :
+{}
+{
+     Term() ( ( <PLUS> | <MINUS> ) Term()  ) *
+
+}
+
+void Term() :
+{}
+{
+     Fact() ( ( <TIMES> | <DIV> ) Term() )?
+}
+
+
+void Fact() :
+{}
+{
+   ( <Num> | <LPAR> Exp() <RPAR> )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
