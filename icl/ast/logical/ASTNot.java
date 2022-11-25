@@ -6,16 +6,26 @@ import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
 import environment.EnvironmentValue;
 import utils.values.IValue;
+import utils.values.VBool;
+import utils.values.VInt;
 
 public class ASTNot implements ASTNode {
-//    @Override
-//    public int eval(EnvironmentInterpreter e) {
-//        return 0;
-//    }
+
+    ASTNode lhs;
+
+    public ASTNot(ASTNode l) {
+        lhs = l;
+    }
 
     @Override
     public IValue eval(EnvironmentValue e) {
-        return null;
+        IValue v1 = lhs.eval(e);
+
+        if	(v1	instanceof VBool) {
+            return	new	VBool( !((VBool)v1).get() );
+        }
+
+        throw new Error("Illegal types to ~ operator");
     }
 
     @Override

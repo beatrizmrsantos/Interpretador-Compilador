@@ -3,6 +3,9 @@ PARSER_BEGIN(Parser)
 package parser;
 import ast.*;
 import ast.arithmetic.*;
+import ast.relational.*;
+import ast.imperative.*;
+import ast.logical.*;
 import utils.Pair;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,11 +29,31 @@ SKIP :
 
 TOKEN :
 {
+  < True: ["t"]["r"]["u"]["e"] >
+  |
+  < False: ["f"]["a"]["l"]["s"]["e"] >
+  |
   < LET: ["l"]["e"]["t"] >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
   |
   < Num: (["0"-"9"]) + >
+  |
+  < OR: "||" >
+  |
+  < AND: "&&" >
+  |
+  < NOT: "~" >
+  |
+  < EQUAL: "==" >
+  |
+  < BIG: ">" >
+  |
+  < BIGEQUAL: ">=" >
+  |
+  < SMALLEQUAL: "<=" >
+  |
+  < SMALL: "<" >
   |
   < PLUS : "+" >
   |
@@ -59,8 +82,54 @@ TOKEN :
 ASTNode Start():
 { ASTNode t;}
 {
-   t = Exp() <TERM>
+   t = BA() <TERM>
    { return t; }
+}
+
+ASTNode BA() :
+{ Token op;
+  ASTNode t1, t2; }
+{
+     t1=BM() ( ( op=<OR> ) t2=BM()
+                 { t1 = new ASTOr(t1,t2);} ) *
+     { return t1; }
+}
+
+ASTNode BM() :
+{ Token op;
+  ASTNode t1, t2; }
+{
+     t1=R() ( ( op=<AND> ) t2=R()
+                 { t1 = new ASTAnd(t1,t2);} ) *
+     { return t1; }
+}
+
+
+ASTNode R() :
+{ Token op;
+  ASTNode t1, t2; }
+{
+     t1=Exp() ( ( op=<EQUAL> | op=<BIG> | op=<SMALL> | op=<BIGEQUAL> | op=<SMALLEQUAL> ) t2=Exp()
+  { switch(op.kind) {
+     case EQUAL:
+         t1 = new ASTEqual(t1,t2);
+         break;
+         case BIG:
+         t1 = new ASTBigger(t1,t2);
+         break;
+         case SMALL:
+             t1 = new ASTSmaller(t1,t2);
+                  break;
+                  case BIGEQUAL:
+                           t1 = new ASTBiggerEqual(t1,t2);
+                           break;
+                           case SMALLEQUAL:
+                                    t1 = new ASTSmallerEqual(t1,t2);
+                                    break;
+       default:
+     }
+} ) ?
+     { return t1; }
 }
 
 
@@ -95,8 +164,9 @@ ASTNode Fact() :
 ASTNode t;
 List<Pair> l;}
 {
-   ( n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); } | <LPAR> t=Exp() <RPAR> | <MINUS> t=Fact() { t = new ASTNeg(t); }
-   | n=<Id> { t = new ASTId(n.image); }
+   ( n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); } | <LPAR> t=BA() <RPAR> | <MINUS> t=Fact() { t = new ASTNeg(t); }
+   | n=<Id> { t = new ASTId(n.image); } | n=<True> { t = new ASTBool(true);} | n=<False> { t = new ASTBool(false);}
+   | <NOT> t=Fact() { t = new ASTNot(t);}
    | <RBR> { l = new LinkedList<>(); }
                 ( <LET> n=<Id> <EQ> t=Exp() <PV> { l.add(new Pair(n.image,t)); } )+
                 t=Exp() <LBR>
