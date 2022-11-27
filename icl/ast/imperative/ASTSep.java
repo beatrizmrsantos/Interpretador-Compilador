@@ -9,14 +9,18 @@ import utils.values.IValue;
 
 //esta classe e para o ; que separa expressoes
 public class ASTSep implements ASTNode {
-//    @Override
-//    public int eval(EnvironmentInterpreter e) {
-//        return 0;
-//    }
+
+    private ASTNode lhs, rhs;
+
+    public ASTSep(ASTNode l, ASTNode r) {
+        lhs = l; rhs = r;
+    }
 
     @Override
     public IValue eval(EnvironmentValue e) {
-        return null;
+        IValue v1 = lhs.eval(e);
+        IValue v2 = rhs.eval(e);
+        return v2;
     }
 
     @Override

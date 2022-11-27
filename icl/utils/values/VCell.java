@@ -14,13 +14,13 @@ public class VCell implements IValue{
         return v;
     }
 
-    public void set(IValue v0)	{
+    public void set(IValue v0){
         v = v0;
     }
 
     @Override
     public String toStr() {
-        return String.valueOf(v);
+        return "Memory cell";
     }
 
 }

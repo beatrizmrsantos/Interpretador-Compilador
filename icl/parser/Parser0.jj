@@ -29,15 +29,23 @@ SKIP :
 
 TOKEN :
 {
-  < True: ["t"]["r"]["u"]["e"] >
+  < BOOL: ("true"|"false") >
   |
-  < False: ["f"]["a"]["l"]["s"]["e"] >
+  < LET: "let" >
   |
-  < LET: ["l"]["e"]["t"] >
-  |
-  < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
+  < MUT: "mut" >
   |
   < Num: (["0"-"9"]) + >
+  |
+  < PV: ";" >
+  |
+  < NEW: "new" >
+  |
+  < WHILE: "while" >
+  |
+  < IF: "if" >
+  |
+  < REF: ":=" >
   |
   < OR: "||" >
   |
@@ -46,6 +54,8 @@ TOKEN :
   < NOT: "~" >
   |
   < EQUAL: "==" >
+  |
+  < NOTEQUAL: "~=" >
   |
   < BIG: ">" >
   |
@@ -73,57 +83,86 @@ TOKEN :
   |
   < EQ: "=" >
   |
-  < PV: ";" >
-  |
   < TERM: ";;" >
+  |
+  < EXCL: "!" >
+  |
+  < PRINTLN: "println" >
+  |
+  < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
 
 }
 
 ASTNode Start():
 { ASTNode t;}
 {
-   t = BA() <TERM>
+   t = Sep() <TERM>
    { return t; }
 }
 
-ASTNode BA() :
+ASTNode Sep():
+{ASTNode t1, t2; }
+{ // left-associative: Exp() ( < SEMICOLON > Exp() )*
+  t1 = Assign()
+  	[ <PV> t2 = Sep()
+  		{ t1 = new ASTSep(t1,t2);}
+ 	] // right associative tree
+  {
+    return t1;
+  }
+}
+
+ASTNode Assign() :
+{ ASTNode t1, t2; }
+{ t1 = Conj()
+  	[ < PV > t2 = Assign()
+  		{ t1 = new ASTAssign(t1,t2);}
+ 	]
+  { return t1; }
+}
+
+
+ASTNode Conj() :
 { Token op;
   ASTNode t1, t2; }
 {
-     t1=BM() ( ( op=<OR> ) t2=BM()
+     t1=Disj() ( ( op=<OR> ) t2=Disj()
                  { t1 = new ASTOr(t1,t2);} ) *
      { return t1; }
 }
 
-ASTNode BM() :
+ASTNode Disj() :
 { Token op;
   ASTNode t1, t2; }
 {
-     t1=R() ( ( op=<AND> ) t2=R()
+     t1=Logic() ( ( op=<AND> ) t2=Logic()
                  { t1 = new ASTAnd(t1,t2);} ) *
      { return t1; }
 }
 
 
-ASTNode R() :
+ASTNode Logic() :
 { Token op;
   ASTNode t1, t2; }
 {
-     t1=Exp() ( ( op=<EQUAL> | op=<BIG> | op=<SMALL> | op=<BIGEQUAL> | op=<SMALLEQUAL> ) t2=Exp()
+     t1=Exp() ( ( op=<EQUAL> | op=<NOTEQUAL> | op=<BIG> | op=<SMALL> | op=<BIGEQUAL> | op=<SMALLEQUAL> ) t2=Exp()
   { switch(op.kind) {
      case EQUAL:
          t1 = new ASTEqual(t1,t2);
          break;
-         case BIG:
-         t1 = new ASTBigger(t1,t2);
-         break;
-         case SMALL:
-             t1 = new ASTSmaller(t1,t2);
-                  break;
-                  case BIGEQUAL:
-                           t1 = new ASTBiggerEqual(t1,t2);
+            case NOTEQUAL:
+             t1 = new ASTNotEqual(t1,t2);
+             break;
+                case BIG:
+                t1 = new ASTBigger(t1,t2);
+                break;
+                    case SMALL:
+                    t1 = new ASTSmaller(t1,t2);
+                    break;
+                        case BIGEQUAL:
+                            t1 = new ASTBiggerEqual(t1,t2);
                            break;
-                           case SMALLEQUAL:
+                                case SMALLEQUAL:
                                     t1 = new ASTSmallerEqual(t1,t2);
                                     break;
        default:
@@ -150,7 +189,7 @@ ASTNode Term() :
 {Token op;
   ASTNode t1, t2;}
 {
-     t1 = Fact() ( ( op=<TIMES> | op=<DIV> ) t2 = Term() 
+     t1 = Unary() ( ( op=<TIMES> | op=<DIV> ) t2 = Unary()
  		 { if (op.kind == TIMES)
         t1 = new ASTMult(t1,t2);
     else  t1 = new ASTDiv(t1,t2);
@@ -159,19 +198,52 @@ ASTNode Term() :
      { return t1; } 
 }
 
+ASTNode Unary() :
+{ ASTNode t; }
+{ (
+    <MINUS> t=Fact() { t = new ASTNeg(t); }
+	|
+	<NOT> t=Fact() { t = new ASTNot(t);}
+	|
+    <EXCL> t=Fact() { t = new ASTDeref(t); }
+
+     ){ return t; }
+}
+
 ASTNode Fact() :
 { Token n; 
-ASTNode t;
+ASTNode t, t2, t3;
 List<Pair> l;}
-{
-   ( n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); } | <LPAR> t=BA() <RPAR> | <MINUS> t=Fact() { t = new ASTNeg(t); }
-   | n=<Id> { t = new ASTId(n.image); } | n=<True> { t = new ASTBool(true);} | n=<False> { t = new ASTBool(false);}
-   | <NOT> t=Fact() { t = new ASTNot(t);}
-   | <RBR> { l = new LinkedList<>(); }
-                ( <LET> n=<Id> <EQ> t=Exp() <PV> { l.add(new Pair(n.image,t)); } )+
-                t=Exp() <LBR>
+{ (
+    n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); }
+   |
+    n=<Id> { t = new ASTId(n.image); }
+   |
+    n=<BOOL> { return new ASTBool(Boolean.parseBoolean(n.image));}
+   |
+   <LPAR> t = Sep() <RPAR>
+   |
+   <RBR> { l = new LinkedList<>(); }
+                ( <LET> n=<Id> <EQ> t=Sep() <PV> { l.add(new Pair(n.image,t)); } )+
+                t=Sep() <LBR>
                 {return new ASTDef(l,t);}
-   ){ return t; }
+   |
+    <RBR> { l = new LinkedList<>(); }
+                      ( <LET> <MUT> n=<Id> <EQ> t=Sep() <PV> { t1=new ASTNew(t); l.add(new Pair(n.image,t1)); } )+
+                      t=Sep() <LBR>
+                      {return new ASTDef(l,t);}
+   |
+   <NEW> <LPAR > t = Sep() <RPAR> { return new ASTNew(t); }
+   |
+   <NEW> t = Unary() { return new ASTNew(t); }
+   |
+   <WHILE> t = Sep() <RBR> t2 = Sep() <LBR> { return new ASTWhile(t,t2);}
+   |
+   <IF> t = Sep() <RBR>t2 = Sep()<LBR> <RBR>t3 = Sep()<LBR> { return new ASTIf(t,t2,t3); }
+   |
+   <PRINTLN> t = Assign() { return new ASTPrintln(t); }
+
+       ){ return t; }
 }
 
 

@@ -8,14 +8,20 @@ import environment.EnvironmentValue;
 import utils.values.IValue;
 
 public class ASTPrintln implements ASTNode {
-//    @Override
-//    public int eval(EnvironmentInterpreter e) {
-//        return 0;
-//    }
+
+    private ASTNode	arg;
+
+    public ASTPrintln(ASTNode value){
+        arg = value;
+    }
 
     @Override
     public IValue eval(EnvironmentValue e) {
-        return null;
+        IValue v1 = arg.eval(e);
+
+        System.out.println(v1.toStr());
+
+        return v1;
     }
 
     @Override

@@ -2,6 +2,8 @@ package ast;
 
 import java.util.List;
 
+import ast.ASTNode;
+import ast.ASTNum;
 import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
 import environment.EnvironmentValue;
@@ -11,7 +13,7 @@ import compiler.CodeBlock;
 import utils.values.IValue;
 import utils.values.VInt;
 
-public class ASTDef implements ASTNode{
+public class ASTDef implements ASTNode {
 
     private List<Pair> list;
     private ASTNode	body;
@@ -20,23 +22,6 @@ public class ASTDef implements ASTNode{
         list = init;
         this.body = body;
     }
-
-//    @Override
-//    public int eval(EnvironmentInterpreter e) {
-//        EnvironmentInterpreter novo = e.beginScope();
-//        int val;
-//
-//        for(Pair p: list){
-//            val = p.getExp().eval(novo);
-//
-//            novo.assoc(p.getId(), val);
-//        }
-//
-//        val = body.eval(novo);
-//        novo.endScope();
-//
-//        return val;
-//    }
 
     @Override
     public IValue eval(EnvironmentValue e) {

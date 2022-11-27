@@ -11,53 +11,63 @@ public interface ParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int True = 5;
+  int PRINTLN = 5;
   /** RegularExpression Id. */
-  int False = 6;
+  int True = 6;
   /** RegularExpression Id. */
-  int LET = 7;
+  int False = 7;
   /** RegularExpression Id. */
-  int Id = 8;
+  int LET = 8;
   /** RegularExpression Id. */
-  int Num = 9;
+  int Id = 9;
   /** RegularExpression Id. */
-  int OR = 10;
+  int Num = 10;
   /** RegularExpression Id. */
-  int AND = 11;
+  int PV = 11;
   /** RegularExpression Id. */
-  int NOT = 12;
+  int NEW = 12;
   /** RegularExpression Id. */
-  int EQUAL = 13;
+  int REF = 13;
   /** RegularExpression Id. */
-  int BIG = 14;
+  int OR = 14;
   /** RegularExpression Id. */
-  int BIGEQUAL = 15;
+  int AND = 15;
   /** RegularExpression Id. */
-  int SMALLEQUAL = 16;
+  int NOT = 16;
   /** RegularExpression Id. */
-  int SMALL = 17;
+  int EQUAL = 17;
   /** RegularExpression Id. */
-  int PLUS = 18;
+  int NOTEQUAL = 18;
   /** RegularExpression Id. */
-  int MINUS = 19;
+  int BIG = 19;
   /** RegularExpression Id. */
-  int TIMES = 20;
+  int BIGEQUAL = 20;
   /** RegularExpression Id. */
-  int DIV = 21;
+  int SMALLEQUAL = 21;
   /** RegularExpression Id. */
-  int LPAR = 22;
+  int SMALL = 22;
   /** RegularExpression Id. */
-  int RPAR = 23;
+  int PLUS = 23;
   /** RegularExpression Id. */
-  int RBR = 24;
+  int MINUS = 24;
   /** RegularExpression Id. */
-  int LBR = 25;
+  int TIMES = 25;
   /** RegularExpression Id. */
-  int EQ = 26;
+  int DIV = 26;
   /** RegularExpression Id. */
-  int PV = 27;
+  int LPAR = 27;
   /** RegularExpression Id. */
-  int TERM = 28;
+  int RPAR = 28;
+  /** RegularExpression Id. */
+  int RBR = 29;
+  /** RegularExpression Id. */
+  int LBR = 30;
+  /** RegularExpression Id. */
+  int EQ = 31;
+  /** RegularExpression Id. */
+  int TERM = 32;
+  /** RegularExpression Id. */
+  int EXCL = 33;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -69,15 +79,20 @@ public interface ParserConstants {
     "\"\\t\"",
     "\"\\r\"",
     "\"\\n\"",
+    "<PRINTLN>",
     "<True>",
     "<False>",
     "<LET>",
     "<Id>",
     "<Num>",
+    "\";\"",
+    "<NEW>",
+    "\":=\"",
     "\"||\"",
     "\"&&\"",
     "\"~\"",
     "\"==\"",
+    "\"~=\"",
     "\">\"",
     "\">=\"",
     "\"<=\"",
@@ -91,8 +106,8 @@ public interface ParserConstants {
     "\"{\"",
     "\"}\"",
     "\"=\"",
-    "\";\"",
     "\";;\"",
+    "\"!\"",
   };
 
 }

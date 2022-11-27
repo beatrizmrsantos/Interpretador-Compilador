@@ -8,18 +8,24 @@ import environment.EnvironmentValue;
 import utils.values.IValue;
 import utils.values.VCell;
 
-public class ASTNew implements ASTNode {
+public class ASTDeref implements ASTNode {
 
-    private ASTNode	expr;
+    ASTNode value;
 
-    public ASTNew(ASTNode value){
-        expr = value;
+    public ASTDeref(ASTNode l) {
+        value = l;
     }
 
     @Override
     public IValue eval(EnvironmentValue e) {
-        IValue v1 = expr.eval(e);
-        return new VCell(v1);
+        IValue v1 = value.eval(e);
+
+        if (v1 instanceof VCell) {
+            IValue v = ((VCell) v1).get();
+            return v;
+        }
+
+        throw new Error("illegal arguments to ! operator");
     }
 
     @Override
