@@ -29,23 +29,29 @@ SKIP :
 
 TOKEN :
 {
-  < BOOL: ("true"|"false") >
-  |
-  < LET: "let" >
-  |
-  < MUT: "mut" >
-  |
   < Num: (["0"-"9"]) + >
+  |
+  < PLUS : "+" >
+  |
+  < MINUS : "-">
+  |
+  < TIMES : "*">
+  |
+  < DIV : "/">
+  |
+  < LPAR : "(" >
+  |
+  < RPAR : ")" >
+  |
+  < RBR: "{" >
+  |
+  < LBR: "}" >
   |
   < PV: ";" >
   |
-  < NEW: "new" >
+  < TERM: ";;" >
   |
-  < WHILE: "while" >
-  |
-  < IF: "if" >
-  |
-  < REF: ":=" >
+  < BOOL: ("true"|"false") >
   |
   < OR: "||" >
   |
@@ -65,27 +71,21 @@ TOKEN :
   |
   < SMALL: "<" >
   |
-  < PLUS : "+" >
-  |
-  < MINUS : "-">
-  |
-  < TIMES : "*">
-  |
-  < DIV : "/">
-  |
-  < LPAR : "(" >
-  |
-  < RPAR : ")" >
-  |
-  < RBR: "{" >
-  |
-  < LBR: "}" >
-  |
   < EQ: "=" >
   |
-  < TERM: ";;" >
+  < ASSIGN: ":=" >
   |
   < EXCL: "!" >
+  |
+  < LET: "let" >
+  |
+  < MUT: "mut" >
+  |
+  < NEW: "new" >
+  |
+  < WHILE: "while" >
+  |
+  < IF: "if" >
   |
   < PRINTLN: "println" >
   |
@@ -102,22 +102,21 @@ ASTNode Start():
 
 ASTNode Sep():
 {ASTNode t1, t2; }
-{ // left-associative: Exp() ( < SEMICOLON > Exp() )*
+{
   t1 = Assign()
-  	[ <PV> t2 = Sep()
+  	( <PV> t2 = Assign()
   		{ t1 = new ASTSep(t1,t2);}
- 	] // right associative tree
-  {
-    return t1;
-  }
+ 	) *
+  {return t1;}
 }
 
 ASTNode Assign() :
 { ASTNode t1, t2; }
-{ t1 = Conj()
-  	[ < PV > t2 = Assign()
+{
+ t1 = Conj()
+  	( <ASSIGN> t2 = Conj()
   		{ t1 = new ASTAssign(t1,t2);}
- 	]
+ 	) *
   { return t1; }
 }
 
@@ -213,35 +212,30 @@ ASTNode Unary() :
 ASTNode Fact() :
 { Token n; 
 ASTNode t, t2, t3;
-List<Pair> l;}
+List<Pair> l;
+boolean b = false;}
 { (
     n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); }
    |
     n=<Id> { t = new ASTId(n.image); }
    |
-    n=<BOOL> { return new ASTBool(Boolean.parseBoolean(n.image));}
+    n=<BOOL> { t = new ASTBool(Boolean.parseBoolean(n.image));}
    |
    <LPAR> t = Sep() <RPAR>
    |
-   <RBR> { l = new LinkedList<>(); }
-                ( <LET> n=<Id> <EQ> t=Sep() <PV> { l.add(new Pair(n.image,t)); } )+
-                t=Sep() <LBR>
-                {return new ASTDef(l,t);}
-   |
     <RBR> { l = new LinkedList<>(); }
-                      ( <LET> <MUT> n=<Id> <EQ> t=Sep() <PV> { t1=new ASTNew(t); l.add(new Pair(n.image,t1)); } )+
+                      ( <LET> (<MUT> { b=true; } )? n=<Id> <EQ> t=Sep() <PV> { if(b){ t=new ASTNew(t);}
+                                                                                l.add(new Pair(n.image,t)); } )+
                       t=Sep() <LBR>
-                      {return new ASTDef(l,t);}
+                      {t = new ASTDef(l,t);}
    |
-   <NEW> <LPAR > t = Sep() <RPAR> { return new ASTNew(t); }
+   <NEW> <LPAR > t = Sep() <RPAR> { t = new ASTNew(t); }
    |
-   <NEW> t = Unary() { return new ASTNew(t); }
+   <WHILE> t = Sep() <RBR> t2 = Sep() <LBR> { t = new ASTWhile(t,t2);}
    |
-   <WHILE> t = Sep() <RBR> t2 = Sep() <LBR> { return new ASTWhile(t,t2);}
+   <IF> t = Sep() <RBR>t2 = Sep()<LBR> <RBR>t3 = Sep()<LBR> { t = new ASTIf(t,t2,t3); }
    |
-   <IF> t = Sep() <RBR>t2 = Sep()<LBR> <RBR>t3 = Sep()<LBR> { return new ASTIf(t,t2,t3); }
-   |
-   <PRINTLN> t = Assign() { return new ASTPrintln(t); }
+   <PRINTLN> t = Assign() { t = new ASTPrintln(t); }
 
        ){ return t; }
 }
