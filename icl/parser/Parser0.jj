@@ -193,7 +193,7 @@ ASTNode Term() :
         t1 = new ASTMult(t1,t2);
     else  t1 = new ASTDiv(t1,t2);
      }
-		)?
+		)*
      { return t1; } 
 }
 

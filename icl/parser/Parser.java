@@ -219,9 +219,18 @@ if (op.kind == PLUS)
   static final public ASTNode Term() throws ParseException {Token op;
   ASTNode t1, t2;
     t1 = Fact();
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case TIMES:
-    case DIV:{
+    label_6:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TIMES:
+      case DIV:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[8] = jj_gen;
+        break label_6;
+      }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TIMES:{
         op = jj_consume_token(TIMES);
@@ -232,7 +241,7 @@ if (op.kind == PLUS)
         break;
         }
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[9] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -240,11 +249,6 @@ if (op.kind == PLUS)
 if (op.kind == TIMES)
         t1 = new ASTMult(t1,t2);
     else  t1 = new ASTDiv(t1,t2);
-      break;
-      }
-    default:
-      jj_la1[9] = jj_gen;
-      ;
     }
 {if ("" != null) return t1;}
     throw new Error("Missing return statement in function");
@@ -303,7 +307,7 @@ t = new ASTDeref(t);
     case RBR:{
       jj_consume_token(RBR);
 l = new LinkedList<>();
-      label_6:
+      label_7:
       while (true) {
         jj_consume_token(LET);
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -329,7 +333,7 @@ if(b){ t=new ASTNew(t); b=false;}
           }
         default:
           jj_la1[11] = jj_gen;
-          break label_6;
+          break label_7;
         }
       }
       t = Sep();
