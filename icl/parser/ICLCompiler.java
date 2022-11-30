@@ -24,7 +24,6 @@ public class ICLCompiler {
 
         //String exp = readCommand(in) + "\n\n";
 
-
             try	{
                 ASTNode ast	= parser.Start();
                 ast.compile(code, e);

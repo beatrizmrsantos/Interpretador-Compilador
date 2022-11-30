@@ -6,6 +6,7 @@ import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
 import environment.EnvironmentValue;
 import utils.values.IValue;
+import utils.values.VNull;
 
 public class ASTPrintln implements ASTNode {
 
@@ -21,7 +22,7 @@ public class ASTPrintln implements ASTNode {
 
         System.out.println(v1.toStr());
 
-        return v1;
+        return new VNull(null);
     }
 
     @Override

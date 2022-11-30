@@ -175,80 +175,67 @@ ASTNode Exp() :
 { Token op;
   ASTNode t1, t2; }
 {
-     t1=Term() ( ( op=<PLUS> | op=<MINUS> ) t2=Term() 
-                 { if (op.kind == PLUS) 
+     t1=Term() ( ( op=<PLUS> | op=<MINUS> ) t2=Term()
+                 { if (op.kind == PLUS)
         t1 = new ASTPlus(t1,t2);
   else  t1 = new ASTSub(t1,t2);
 }
                ) *
-     { return t1; } 
+     { return t1; }
 }
 
 ASTNode Term() :
 {Token op;
   ASTNode t1, t2;}
 {
-     t1 = Fact() ( ( op=<TIMES> | op=<DIV> ) t2 = Fact()
+     t1 = Unary() ( ( op=<TIMES> | op=<DIV> ) t2 = Unary()
  		 { if (op.kind == TIMES)
         t1 = new ASTMult(t1,t2);
     else  t1 = new ASTDiv(t1,t2);
      }
 		)?
-     { return t1; } 
+     { return t1; }
 }
 
+ASTNode Unary() :
+{ ASTNode t; }
+{ (
+    <MINUS> t=Fact() { t = new ASTNeg(t); }
+	|
+	<NOT> t=Fact() { t = new ASTNot(t);}
+	|
+    <EXCL> t=Fact() { t = new ASTDeref(t); }
+
+     ){ return t; }
+}
 
 ASTNode Fact() :
-{ Token n; 
+{ Token n;
 ASTNode t, t2, t3;
 List<Pair> l;
 boolean b = false;}
 { (
     n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); }
    |
-   <PRINTLN> t = Fact() { t = new ASTPrintln(t); }
-   |
     n=<Id> { t = new ASTId(n.image); }
    |
     n=<BOOL> { t = new ASTBool(Boolean.parseBoolean(n.image));}
    |
-   <MINUS> t=Fact() { t = new ASTNeg(t); }
-   	|
-   	<NOT> t=Fact() { t = new ASTNot(t);}
-   	|
-   <EXCL> t=Fact() { t = new ASTDeref(t); }
-    |
    <LPAR> t = Sep() <RPAR>
    |
     <RBR> { l = new LinkedList<>(); }
-                      ( <LET> (<MUT> { b=true; } )? n=<Id> <EQ> t=Assign() <PV>{ if(b){ t=new ASTNew(t); b=false;}
+                      ( <LET> (<MUT> { b=true; } )? n=<Id> <EQ> t=Sep() <PV> { if(b){ t=new ASTNew(t);}
                                                                                 l.add(new Pair(n.image,t)); } )+
                       t=Sep() <LBR>
                       {t = new ASTDef(l,t);}
-    |
-   <NEW> t = Fact() { t = new ASTNew(t); }
+   |
+   <NEW> <LPAR > t = Sep() <RPAR> { t = new ASTNew(t); }
    |
    <WHILE> t = Sep() <RBR> t2 = Sep() <LBR> { t = new ASTWhile(t,t2);}
    |
-   <IF> t = Sep() <RBR> t2 = Sep()<LBR> <RBR> t3 = Sep()<LBR> { t = new ASTIf(t,t2,t3); }
+   <IF> t = Sep() <RBR>t2 = Sep()<LBR> <RBR> t3 = Sep()<LBR> { t = new ASTIf(t,t2,t3); }
+   |
+   <PRINTLN> t = Assign() { t = new ASTPrintln(t); }
 
        ){ return t; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
