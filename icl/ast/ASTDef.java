@@ -1,27 +1,39 @@
 package ast;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import ast.ASTNode;
-import ast.ASTNum;
 import environment.EnvironmentCompiler;
-import environment.EnvironmentInterpreter;
+import environment.EnvironmentType;
 import environment.EnvironmentValue;
+import types.IType;
+import types.TypeBool;
+import types.TypeInt;
+import types.TypeRef;
 import utils.Coordinates;
 import utils.Pair;
 import compiler.CodeBlock;
+import utils.Types;
 import utils.values.IValue;
-import utils.values.VInt;
 
 public class ASTDef implements ASTNode {
 
     private List<Pair> list;
     private ASTNode	body;
 
+    private Map<IType, Types> types;
+
     public ASTDef (List<Pair> init, ASTNode	body){
         list = init;
         this.body = body;
+
+        types = new HashMap<>();
+        types.put(new TypeInt(), null);
+        types.put(new TypeBool(), null);
+        //types.put(new TypeRef(), null);
     }
+
 
     @Override
     public IValue eval(EnvironmentValue e) {
@@ -42,8 +54,10 @@ public class ASTDef implements ASTNode {
 
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e) {
+    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
         EnvironmentCompiler novo = e.beginScope();
+        EnvironmentType tnovo = t.beginScope();
+        IType val;
 
         //ja comeca com 1 enviroment, por isso o primeiro def sera a frame 0
         int numberFrame = e.depth() - 1;
@@ -59,7 +73,10 @@ public class ASTDef implements ASTNode {
             if(p.getExp() instanceof ASTNum){
                 c.emit("aload_3");
             }
-            p.getExp().compile(c, novo);
+            p.getExp().compile(c, novo, tnovo);
+            val = p.getExp().typecheck(t);
+
+            types.put(val, new Types(p.getId(), ...) );
 
             c.emit("putfield frame_" + numberFrame + "/v" + numberVar + " I;");
 
@@ -69,7 +86,7 @@ public class ASTDef implements ASTNode {
             numberVar++;
         }
 
-        body.compile(c, novo);
+        body.compile(c, novo, tnovo);
 
         c.emit(framePopOf(numberFrame));
         novo.endScope();

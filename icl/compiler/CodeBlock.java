@@ -36,6 +36,7 @@ public class CodeBlock {
 
     }
 
+    //faz o ficheiro com a compilacao do codigo
     private void dumpMainFile(String filename) throws IOException {
         PrintStream fileJ = new PrintStream( filename + ".j");
 
@@ -44,6 +45,7 @@ public class CodeBlock {
         code.clear();
     }
 
+    //faz as classes de cada enviroment
     private void dumpFrame(int numberframe) throws FileNotFoundException {
         PrintStream file = new PrintStream("compiler" + numberframe + ".j");
 
@@ -59,7 +61,6 @@ public class CodeBlock {
 
         addVarAndConstructor(numberframe);
 
-        //PERGUNTAR: onde e que meto a compilacao do codigo uma vez que tenho diferentes ficheiros para cada classe? ( + convertListToString(code) )
         file.print(convertListToString(classHeader));
         classHeader.clear();
     }
@@ -80,11 +81,6 @@ public class CodeBlock {
 
         classHeader.addLast(s3);
     }
-
-
-    /*public String gensym(){
-        return "";
-    }*/
 
     private String convertListToString(LinkedList<String> list){
         String res = "";

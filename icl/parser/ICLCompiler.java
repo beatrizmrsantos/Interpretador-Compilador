@@ -5,6 +5,7 @@ import environment.EnvironmentCompiler;
 
 import java.io.*;
 import compiler.CodeBlock;
+import environment.EnvironmentType;
 
 public class ICLCompiler {
 
@@ -21,12 +22,13 @@ public class ICLCompiler {
         Parser parser = new Parser(in);
         CodeBlock code = new CodeBlock();
         EnvironmentCompiler e = new EnvironmentCompiler(null);
+        EnvironmentType t = new EnvironmentType(null);
 
         //String exp = readCommand(in) + "\n\n";
 
             try	{
                 ASTNode ast	= parser.Start();
-                ast.compile(code, e);
+                ast.compile(code, e, t);
                 code.dump(filename);
 
                 e.endScope();
