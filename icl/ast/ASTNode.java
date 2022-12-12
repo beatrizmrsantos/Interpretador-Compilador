@@ -8,9 +8,9 @@ public interface ASTNode {
 
     IValue eval(EnvironmentValue e);
 
-    void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t);
-
     IType typecheck(EnvironmentType e);
+
+    void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t);
 
 }
 

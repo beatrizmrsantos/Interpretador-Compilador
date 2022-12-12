@@ -3,7 +3,10 @@ import ast.ASTNode;
 import compiler.CodeBlock;
 import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
+import environment.EnvironmentType;
 import environment.EnvironmentValue;
+import types.IType;
+import types.TypeInt;
 import utils.values.IValue;
 import utils.values.VInt;
 
@@ -16,12 +19,6 @@ public class ASTNeg implements ASTNode {
         lhs = l;
     }
 
-//    public int eval(EnvironmentInterpreter e)
-//    {
-//        int v1 = lhs.eval(e);
-//        return -v1;
-//    }
-
     @Override
     public IValue eval(EnvironmentValue e) {
         IValue v1 = lhs.eval(e);
@@ -33,8 +30,18 @@ public class ASTNeg implements ASTNode {
         throw new Error("Illegal types to neg operator");
     }
 
-    public void compile(CodeBlock c, EnvironmentCompiler e)	{
-        lhs.compile(c, e);
+    public IType typecheck(EnvironmentType e) {
+        IType t1 = lhs.typecheck(e);
+
+        if	(t1	instanceof TypeInt) {
+            return t1;
+        }
+
+        throw new Error("Illegal types to neg operator");
+    }
+
+    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t)	{
+        lhs.compile(c, e, t);
         c.emit("ineg");
     }
 }

@@ -2,9 +2,12 @@ package ast.imperative;
 
 import ast.ASTNode;
 import compiler.CodeBlock;
+import compiler.Memory;
 import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
+import environment.EnvironmentType;
 import environment.EnvironmentValue;
+import types.IType;
 import utils.values.IValue;
 import utils.values.VNull;
 
@@ -25,8 +28,13 @@ public class ASTPrintln implements ASTNode {
         return new VNull(null);
     }
 
+    public IType typecheck(EnvironmentType e) {
+
+        return arg.typecheck(e);
+    }
+
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e) {
+    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
 
     }
 }

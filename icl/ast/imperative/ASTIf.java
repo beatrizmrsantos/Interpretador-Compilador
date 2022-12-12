@@ -4,7 +4,12 @@ import ast.ASTNode;
 import compiler.CodeBlock;
 import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
+import environment.EnvironmentType;
 import environment.EnvironmentValue;
+import types.IType;
+import types.TypeBool;
+import types.TypeInt;
+import types.TypeRef;
 import utils.values.IValue;
 import utils.values.VBool;
 
@@ -35,8 +40,25 @@ public class ASTIf implements ASTNode {
         throw new Error("illegal arguments to if operator");
     }
 
+    public IType typecheck(EnvironmentType e) {
+        IType t1 = cond.typecheck(e);
+
+        if	(t1 instanceof TypeBool) {
+            IType t2 = f.typecheck(e);
+            IType t3 = s.typecheck(e);
+
+            if (!t2.getClass().getName().equals(t3.getClass().getName())
+            || t2.equals(new Error()) || t3.equals(new Error())) {
+                new Error("Illegal types to if else operators");
+            }
+            return t2;
+        }
+
+        throw new Error("Illegal types to if operator");
+    }
+
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e) {
+    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
 
     }
 }

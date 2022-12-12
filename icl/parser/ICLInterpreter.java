@@ -1,7 +1,9 @@
 package parser;
 
 import ast.*;
+import environment.EnvironmentType;
 import environment.EnvironmentValue;
+import types.IType;
 import utils.values.IValue;
 import utils.values.VNull;
 
@@ -12,17 +14,11 @@ public class ICLInterpreter {
 
     public static void main(String args[]) throws IOException {
 
-//        InputStream in = new FileInputStream("Expression.icl");
-//
-//        String result = new BufferedReader(new InputStreamReader(in))
-//                .lines().collect(Collectors.joining("\n"));
-//
-//        System.out.println(result);
-
         Parser parser = new Parser(System.in);
         ASTNode exp;
-        //EnvironmentInterpreter e = new EnvironmentInterpreter(null);
+
         EnvironmentValue e = new EnvironmentValue(null);
+        //EnvironmentType e = new EnvironmentType(null);
 
         while (true) {
             try {
@@ -34,6 +30,9 @@ public class ICLInterpreter {
                     System.out.println( n.toStr() );
                 }
 
+//                IType n = exp.typecheck(e);
+//                System.out.println(n);
+
                 e.endScope();
 
             } catch (ParseException pe) {
@@ -42,6 +41,10 @@ public class ICLInterpreter {
 
             } catch (Exception ex) {
                 System.out.println ("crash" + ex);
+                parser.ReInit(System.in);
+
+            }catch (Error error) {
+                System.out.println(error);
                 parser.ReInit(System.in);
             }
         }

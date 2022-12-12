@@ -2,7 +2,10 @@ package ast;
 import compiler.CodeBlock;
 import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
+import environment.EnvironmentType;
 import environment.EnvironmentValue;
+import types.IType;
+import types.TypeBool;
 import utils.Coordinates;
 import utils.values.IValue;
 
@@ -13,13 +16,6 @@ public class ASTId implements ASTNode{
         this.id = id;
     }
 
-//    public int eval(EnvironmentInterpreter e)	{
-//        if(e.find(id) == 0){
-//            throw new Error("Undeclared Identifier");
-//        }
-//        return e.find(id);
-//    }
-
     @Override
     public IValue eval(EnvironmentValue e) {
         if(e.find(id) == null){
@@ -28,8 +24,16 @@ public class ASTId implements ASTNode{
         return e.find(id);
     }
 
+    public IType typecheck(EnvironmentType e) {
+        if(e.find(id) == null){
+            throw new Error("Undeclared Identifier");
+        }
+
+        return e.find(id);
+    }
+
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e) {
+    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
         c.emit("aload_3");
 
         Coordinates cord = e.find(id);

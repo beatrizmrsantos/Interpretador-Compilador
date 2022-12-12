@@ -52,6 +52,26 @@ public class ASTDef implements ASTNode {
         return val;
     }
 
+    public IType typecheck(EnvironmentType e) {
+        EnvironmentType novo = e.beginScope();
+        IType val;
+
+        for(Pair p: list){
+            val = p.getExp().typecheck(novo);
+
+            if (val.equals(new Error())) {
+                throw new Error("illegal arguments to let operator");
+            }
+
+            novo.assoc(p.getId(), val);
+        }
+
+        val = body.typecheck(novo);
+        novo.endScope();
+
+        return val;
+    }
+
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
@@ -76,7 +96,7 @@ public class ASTDef implements ASTNode {
             p.getExp().compile(c, novo, tnovo);
             val = p.getExp().typecheck(t);
 
-            types.put(val, new Types(p.getId(), ...) );
+           // types.put(val, new Types(p.getId(), ...) );
 
             c.emit("putfield frame_" + numberFrame + "/v" + numberVar + " I;");
 

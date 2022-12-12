@@ -4,18 +4,18 @@ import compiler.CodeBlock;
 
 public class TypeRef implements IType {
 
-	private String type;
+	private IType type;
 
-	public TypeRef(String type) {
-		this.type = type.getName();
+	public TypeRef(IType type) {
+		this.type = type;
 	}
 
-//	public String getRefType() {
-//		return type;
-//	}
+	public IType getRefType() {
+		return type;
+	}
 
 	public String getName() {
-		return "REF [" + type + "]";
+		return "REF [" + type.getName() + "]";
 	}
 
 }
