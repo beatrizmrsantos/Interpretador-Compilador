@@ -13,15 +13,15 @@ import utils.values.VBool;
 
 public class ASTBool implements ASTNode{
 
-    VBool v;
+    private boolean v;
 
     public ASTBool(boolean n) {
-        v = new VBool(n);
+        v = n;
     }
 
     @Override
     public IValue eval(EnvironmentValue e) {
-        return v;
+        return new VBool(v);
     }
 
     public IType typecheck(EnvironmentType e) {
@@ -30,6 +30,10 @@ public class ASTBool implements ASTNode{
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-
+        if (v) {
+            c.emit("goto TL");
+        } else {
+            c.emit("goto FL");
+        }
     }
 }

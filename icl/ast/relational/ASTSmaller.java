@@ -53,6 +53,11 @@ public class ASTSmaller implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+        lhs.compile(c, e, t);
+        rhs.compile(c, e, t);
 
+        c.emit("isub");
+        c.emit("iflt TL");
+        c.emit("goto FL");
     }
 }

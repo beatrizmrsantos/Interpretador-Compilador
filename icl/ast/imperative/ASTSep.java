@@ -38,6 +38,7 @@ public class ASTSep implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-
+        lhs.compile(c, e, t);
+        rhs.compile(c, e, t);
     }
 }

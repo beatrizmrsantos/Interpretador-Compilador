@@ -39,6 +39,13 @@ public class ASTNew implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+        IType t1 = expr.typecheck(t);
 
+        c.emit("putfieldnew ref_of_" + t1.getName());
+        c.emit("dup");
+        c.emit("invokespecial ref_of_" + t1.getName() + "/<init>()V");
+        c.emit("dup");
+        expr.compile(c, e, t);
+        c.emit("putfield ref_of_" + t1.getName() + "/v " + t1.getName());
     }
 }

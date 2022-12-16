@@ -43,6 +43,6 @@ public class ASTNot implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-
+        lhs.compile(c, e, t);
     }
 }

@@ -47,6 +47,11 @@ public class ASTAssign implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+        lhs.compile(c, e, t);
+        rhs.compile(c, e, t);
 
+        IType t1 = lhs.typecheck(t);
+        IType t2 = rhs.typecheck(t);
+        c.emit("putfield ref_of_" + t1.getName() + "/v " + t2.getName());
     }
 }

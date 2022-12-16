@@ -59,6 +59,12 @@ public class ASTIf implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-
+        cond.compile(c, e, t);
+        c.emit("TL: ");
+        f.compile(c, e, t);
+        c.emit("goto LExit ");
+        c.emit("FL: ");
+        s.compile(c, e, t);
+        c.emit("LExit: ");
     }
 }

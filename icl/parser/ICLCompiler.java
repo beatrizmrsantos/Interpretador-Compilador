@@ -6,6 +6,7 @@ import environment.EnvironmentCompiler;
 import java.io.*;
 import compiler.CodeBlock;
 import environment.EnvironmentType;
+import types.IType;
 
 public class ICLCompiler {
 
@@ -28,6 +29,7 @@ public class ICLCompiler {
 
             try	{
                 ASTNode ast	= parser.Start();
+                ast.typecheck(e);
                 ast.compile(code, e, t);
                 code.dump(filename);
 

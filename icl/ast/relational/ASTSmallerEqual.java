@@ -53,6 +53,11 @@ public class ASTSmallerEqual implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+        lhs.compile(c, e, t);
+        rhs.compile(c, e, t);
 
+        c.emit("isub");
+        c.emit("ifle TL");
+        c.emit("goto FL");
     }
 }

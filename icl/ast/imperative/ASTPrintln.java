@@ -35,6 +35,9 @@ public class ASTPrintln implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-
+        c.emit("getstatic java/lang/System/out Ljava/io/PrintStream;");
+        arg.compile(c, e, t);
+        c.emit("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;");
+        c.emit("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
     }
 }

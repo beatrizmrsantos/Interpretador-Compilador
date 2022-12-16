@@ -45,6 +45,9 @@ public class ASTDeref implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+        value.compile(c, e, t);
 
+        IType t1 = value.typecheck(t);
+        c.emit("getfield ref_of_" + t1.getName() + "/v " + t1.getName());
     }
 }

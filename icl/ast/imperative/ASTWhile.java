@@ -50,6 +50,13 @@ public class ASTWhile implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+        c.emit("LStart: ");
+        cond.compile(c, e, t);
+        c.emit("TL: ");
+        body.compile(c, e, t);
+        c.emit("pop ");
+        c.emit("goto Start ");
+        c.emit("FL: ");
 
     }
 }
