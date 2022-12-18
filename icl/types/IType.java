@@ -4,6 +4,6 @@ import compiler.CodeBlock;
 
 public interface IType {
 
-	String getName();
+	String getName(CodeBlock c);
 
 }

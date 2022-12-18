@@ -10,7 +10,8 @@ public interface ASTNode {
 
     IType typecheck(EnvironmentType e);
 
-    void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t);
+    void compile(CodeBlock c, EnvironmentCompiler e);
 
+    IType getType();
 }
 

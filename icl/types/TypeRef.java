@@ -14,9 +14,8 @@ public class TypeRef implements IType {
 		return type;
 	}
 
-	public String getName() {
-		return "REF [" + type.getName() + "]";
-		//ou ref_of_ type.getName()
+	public String getName(CodeBlock c) {
+		return c.putAndGetReference(this).className();
 	}
 
 }

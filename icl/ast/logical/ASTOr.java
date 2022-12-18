@@ -14,10 +14,12 @@ import utils.values.VInt;
 
 public class ASTOr implements ASTNode {
 
+    public IType type;
     ASTNode lhs, rhs;
 
     public ASTOr(ASTNode l, ASTNode r) {
         lhs = l; rhs = r;
+        type = null;
     }
 
     @Override
@@ -42,7 +44,8 @@ public class ASTOr implements ASTNode {
             IType t2 = rhs.typecheck(e);
 
             if	(t2	instanceof TypeBool) {
-                return t1;
+                type = t1;
+                return type;
             }
         }
 
@@ -50,9 +53,14 @@ public class ASTOr implements ASTNode {
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        lhs.compile(c, e);
+        rhs.compile(c, e);
         c.emit("ior");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

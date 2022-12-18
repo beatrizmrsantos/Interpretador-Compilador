@@ -8,7 +8,8 @@ public class TypeInt implements IType {
 
 	}
 
-	public String getName() {
+	public String getName(CodeBlock c) {
+		c.putAndGetReference(this);
 		return "I";
 	}
 }

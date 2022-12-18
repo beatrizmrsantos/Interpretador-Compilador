@@ -14,11 +14,13 @@ import utils.values.VBool;
 
 public class ASTWhile implements ASTNode {
 
+    public IType type;
     private ASTNode cond, body;
 
     public ASTWhile(ASTNode cond, ASTNode body) {
         this.cond = cond;
         this.body = body;
+        type = null;
     }
 
     @Override
@@ -45,18 +47,27 @@ public class ASTWhile implements ASTNode {
             throw new Error("illegal arguments to while operator");
         }
 
-        return new TypeBool();
+        type = new TypeBool();
+        return type;
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        c.emit("LStart: ");
-        cond.compile(c, e, t);
-        c.emit("TL: ");
-        body.compile(c, e, t);
-        c.emit("pop ");
-        c.emit("goto Start ");
-        c.emit("FL: ");
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        int l1 = c.getLabel();
+        int l2 = c.getLabel();
 
+        c.emit("L" + l1 + ":");
+        cond.compile(c, e);
+        c.emit("ifeq L" + l2);
+        body.compile(c, e);
+        c.emit("pop");
+        c.emit("goto L" + l1);
+        c.emit("L" + l2 + ":");
+
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

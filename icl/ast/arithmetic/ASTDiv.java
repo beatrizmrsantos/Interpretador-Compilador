@@ -12,10 +12,13 @@ import utils.values.VInt;
 
 public class ASTDiv implements ASTNode {
 
+    public IType type;
+
     ASTNode lhs, rhs;
 
     public ASTDiv(ASTNode l, ASTNode r) {
         lhs = l; rhs = r;
+        type = null;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class ASTDiv implements ASTNode {
             IValue v2 = rhs.eval(e);
 
             if	(v2	instanceof VInt) {
-                return	new	VInt(((VInt)v1).get()/((VInt)v2).get());
+                return new VInt(((VInt)v1).get()/((VInt)v2).get());
             }
         }
 
@@ -40,16 +43,22 @@ public class ASTDiv implements ASTNode {
             IType t2 = rhs.typecheck(e);
 
             if	(t2	instanceof TypeInt) {
-                return t1;
+                type = t1;
+                return type;
             }
         }
 
         throw new Error("Illegal types to / operator");
     }
 
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t)	{
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e)	{
+        lhs.compile(c, e);
+        rhs.compile(c, e);
         c.emit("idiv");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

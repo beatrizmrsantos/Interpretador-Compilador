@@ -10,10 +10,13 @@ import utils.Coordinates;
 import utils.values.IValue;
 
 public class ASTId implements ASTNode{
+
+    public IType type;
     String	id;
 
     public ASTId(String id){
         this.id = id;
+        type = null;
     }
 
     @Override
@@ -29,11 +32,12 @@ public class ASTId implements ASTNode{
             throw new Error("Undeclared Identifier");
         }
 
-        return e.find(id);
+        type = e.find(id);
+        return type;
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
         c.emit("aload_3");
 
         Coordinates cord = e.find(id);
@@ -41,6 +45,11 @@ public class ASTId implements ASTNode{
             c.emit("getfield frame_" + (i-2) + "/sl Lframe_" + (i-3) + ";");
         }
 
-        c.emit("getfield frame_" + (cord.getDepth()-2) + "/" + cord.getVar() + " I;");
+        c.emit("getfield frame_" + (cord.getDepth()-2) + "/" + cord.getVar() + " Ljava/lang/Object;");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

@@ -1,6 +1,7 @@
 package ast.imperative;
 
 import ast.ASTNode;
+import compiler.CellReference;
 import compiler.CodeBlock;
 import compiler.Memory;
 import environment.EnvironmentCompiler;
@@ -15,10 +16,13 @@ import utils.values.VCell;
 
 public class ASTNew implements ASTNode {
 
+    public IType type;
+
     private ASTNode	expr;
 
     public ASTNew(ASTNode value){
         expr = value;
+        type = null;
     }
 
     @Override
@@ -34,18 +38,25 @@ public class ASTNew implements ASTNode {
             throw new Error("illegal arguments to new operator");
         }
 
-        return new TypeRef(t1);
+        type = new TypeRef(t1);
+
+        return type;
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        IType t1 = expr.typecheck(t);
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        CellReference ref = c.putAndGetReference(this.getType());
 
-        c.emit("putfieldnew ref_of_" + t1.getName());
+        c.emit("new " + ref.className());
         c.emit("dup");
-        c.emit("invokespecial ref_of_" + t1.getName() + "/<init>()V");
+        c.emit("invokespecial " + ref.className() + "/<init>()V");
         c.emit("dup");
-        expr.compile(c, e, t);
-        c.emit("putfield ref_of_" + t1.getName() + "/v " + t1.getName());
+        expr.compile(c, e);
+        c.emit("putfield " + ref.className() + "/v " + ref.getType());
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

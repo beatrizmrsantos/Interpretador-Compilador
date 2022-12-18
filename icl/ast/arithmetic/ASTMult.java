@@ -12,11 +12,13 @@ import utils.values.VInt;
 
 public class ASTMult implements ASTNode {
 
+    public IType type;
+
     ASTNode lhs, rhs;
 
-    public ASTMult(ASTNode l, ASTNode r)
-    {
+    public ASTMult(ASTNode l, ASTNode r) {
         lhs = l; rhs = r;
+        type = null;
     }
 
     @Override
@@ -41,16 +43,22 @@ public class ASTMult implements ASTNode {
             IType t2 = rhs.typecheck(e);
 
             if	(t2	instanceof TypeInt) {
-                return t1;
+                type = t1;
+                return type;
             }
         }
 
         throw new Error("Illegal types to * operator");
     }
 
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t)	{
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e)	{
+        lhs.compile(c, e);
+        rhs.compile(c, e);
         c.emit("imul");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

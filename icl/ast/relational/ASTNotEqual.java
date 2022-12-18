@@ -14,11 +14,13 @@ import utils.values.VInt;
 
 public class ASTNotEqual implements ASTNode{
 
+    public IType type;
     ASTNode lhs, rhs;
 
     public ASTNotEqual(ASTNode l, ASTNode r) {
         lhs = l;
         rhs = r;
+        type = null;
     }
 
     @Override
@@ -40,19 +42,33 @@ public class ASTNotEqual implements ASTNode{
         IType t2 = rhs.typecheck(e);
 
         if	((t1 instanceof TypeBool && t2 instanceof TypeBool) || (t1 instanceof TypeInt && t2 instanceof TypeInt)) {
-            return new TypeBool();
+            type = new TypeBool();
+            return type;
         }
 
         throw new Error("Illegal types to ~= operator");
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        String l1 = "L" + c.getLabel();
+        String l2 = "L" + c.getLabel();
+
+        lhs.compile(c, e);
+        rhs.compile(c, e);
 
         c.emit("isub");
-        c.emit("ifneq TL");
-        c.emit("goto FL");
+
+        c.emit("if_icmpne " + l1);
+        c.emit("iconst_0");
+        c.emit("goto " + l2);
+        c.emit(l1 + ":");
+        c.emit("iconst_1");
+        c.emit(l2 + ":");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

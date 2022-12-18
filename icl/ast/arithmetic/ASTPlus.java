@@ -10,6 +10,7 @@ import utils.values.VInt;
 
 public class ASTPlus implements ASTNode {
 
+    public IType type;
     ASTNode lhs, rhs;
 
     @Override
@@ -34,7 +35,8 @@ public class ASTPlus implements ASTNode {
             IType t2 = rhs.typecheck(e);
 
             if	(t2	instanceof TypeInt) {
-                return t1;
+                type = t1;
+                return type;
             }
         }
 
@@ -43,12 +45,18 @@ public class ASTPlus implements ASTNode {
 
     public ASTPlus(ASTNode l, ASTNode r) {
 		lhs = l; rhs = r;
+        type = null;
     }
 
-    public	void	compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t)	{
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e)	{
+        lhs.compile(c, e);
+        rhs.compile(c, e);
         c.emit( "iadd" );
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }
 

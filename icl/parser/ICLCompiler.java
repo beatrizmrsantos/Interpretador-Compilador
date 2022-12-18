@@ -1,6 +1,7 @@
 package parser;
 
-import ast.ASTNode;
+
+import ast.*;
 import environment.EnvironmentCompiler;
 
 import java.io.*;
@@ -14,10 +15,20 @@ public class ICLCompiler {
 
         //le da linha de comando
         String filenameInput = args[0];
-        String filename = filenameInput.split("\\.")[0];
+        String[] file = filenameInput.split("\\.");
+        String filename = file[0];
 
-        //vai buscar o file e le o comando a compilar
-        InputStream in = new FileInputStream(filenameInput);
+        if (!file[1].equals(".icl")) {
+            System.out.println("Warning: Code file does not have a .icl extension.");
+        }
+
+        InputStream in = null;
+        try {
+            //vai buscar o file e le o comando a compilar
+            in = new FileInputStream(filenameInput);
+        } catch (IOException e) {
+            System.out.println("File " + filename + " not found.");
+        }
 
         //inicializa o parser, codeblock e environment
         Parser parser = new Parser(in);
@@ -25,18 +36,15 @@ public class ICLCompiler {
         EnvironmentCompiler e = new EnvironmentCompiler(null);
         EnvironmentType t = new EnvironmentType(null);
 
-        //String exp = readCommand(in) + "\n\n";
-
             try	{
                 ASTNode ast	= parser.Start();
-                ast.typecheck(e);
-                ast.compile(code, e, t);
+                ast.typecheck(t);
+                ast.compile(code, e);
                 code.dump(filename);
 
                 e.endScope();
                 in.close();
 
-                //TO-DO Exceptions clas
             } catch (ParseException pe) {
                 System.out.println ("Syntax Error: " + pe);
                 parser.ReInit(System.in);

@@ -1,6 +1,7 @@
 package ast.imperative;
 
 import ast.ASTNode;
+import compiler.CellReference;
 import compiler.CodeBlock;
 import compiler.Memory;
 import environment.EnvironmentCompiler;
@@ -14,10 +15,12 @@ import utils.values.VCell;
 
 public class ASTDeref implements ASTNode {
 
+    public IType type;
     ASTNode value;
 
     public ASTDeref(ASTNode l) {
         value = l;
+        type = null;
     }
 
     @Override
@@ -44,10 +47,16 @@ public class ASTDeref implements ASTNode {
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        value.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        value.compile(c, e);
+        CellReference ref = c.putAndGetReference(value.getType());
 
-        IType t1 = value.typecheck(t);
-        c.emit("getfield ref_of_" + t1.getName() + "/v " + t1.getName());
+        c.emit("checkcast " + ref.className());
+        c.emit("getfield ref_of_" + ref.className() + "/v " + ref.getType());
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

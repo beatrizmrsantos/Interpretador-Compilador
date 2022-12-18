@@ -12,14 +12,13 @@ import utils.values.VInt;
 
 public class ASTNum implements ASTNode {
 
-    VInt val;
+    public IType type;
 
-//    public int eval(EnvironmentInterpreter e) {
-//        return val;
-//    }
+    VInt val;
 
     public ASTNum(int n) {
         val = new VInt(n);
+        type = null;
     }
 
     @Override
@@ -31,9 +30,13 @@ public class ASTNum implements ASTNode {
         return new TypeInt();
     }
 
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t)	{
+    public void compile(CodeBlock c, EnvironmentCompiler e)	{
         c.emit("sipush " + val);
     }
 
+    @Override
+    public IType getType() {
+        return type;
+    }
 }
 

@@ -15,6 +15,7 @@ import utils.values.VBool;
 
 public class ASTIf implements ASTNode {
 
+    public IType type;
     private ASTNode cond;
     private ASTNode f;
     private ASTNode s;
@@ -23,6 +24,7 @@ public class ASTIf implements ASTNode {
         this.cond = cond;
         this.f = f;
         this.s = s;
+        type = null;
     }
 
     @Override
@@ -58,13 +60,21 @@ public class ASTIf implements ASTNode {
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        cond.compile(c, e, t);
-        c.emit("TL: ");
-        f.compile(c, e, t);
-        c.emit("goto LExit ");
-        c.emit("FL: ");
-        s.compile(c, e, t);
-        c.emit("LExit: ");
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        String falseLabel = "L" + c.getLabel();
+        String trueLabel = "L" + c.getLabel();
+
+        cond.compile(c, e);
+        c.emit("ifeq " + falseLabel);
+        f.compile(c, e);
+        c.emit("goto " + trueLabel);
+        c.emit(falseLabel + ":");
+        s.compile(c, e);
+        c.emit(trueLabel + ":");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

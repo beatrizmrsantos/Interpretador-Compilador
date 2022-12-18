@@ -1,6 +1,7 @@
 package ast.imperative;
 
 import ast.ASTNode;
+import compiler.CellReference;
 import compiler.CodeBlock;
 import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;
@@ -14,10 +15,13 @@ import utils.values.VCell;
 
 public class ASTAssign implements ASTNode {
 
+    public IType type;
+
     private ASTNode lhs, rhs;
 
     public ASTAssign(ASTNode l, ASTNode r) {
         lhs = l; rhs = r;
+        type = null;
     }
 
     @Override
@@ -38,7 +42,9 @@ public class ASTAssign implements ASTNode {
         IType t1 = lhs.typecheck(e);
         IType t2 = rhs.typecheck(e);
 
-        if	(t1 instanceof TypeRef && ((TypeRef) t1).getRefType().getClass().getSimpleName().equals(t2.getClass().getSimpleName())) {
+        if	(t1 instanceof TypeRef
+                && ((TypeRef) t1).getRefType().getClass().getSimpleName().equals(t2.getClass().getSimpleName())) {
+            type = t2;
             return t2;
         }
 
@@ -46,12 +52,17 @@ public class ASTAssign implements ASTNode {
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        CellReference ref = c.putAndGetReference(lhs.getType());
 
-        IType t1 = lhs.typecheck(t);
-        IType t2 = rhs.typecheck(t);
-        c.emit("putfield ref_of_" + t1.getName() + "/v " + t2.getName());
+        lhs.compile(c, e);
+        rhs.compile(c, e);
+
+        c.emit("putfield " + ref.className() + "/v " + ref.getType());
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

@@ -1,37 +1,26 @@
 package ast;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import environment.EnvironmentCompiler;
 import environment.EnvironmentType;
 import environment.EnvironmentValue;
 import types.IType;
-import types.TypeBool;
-import types.TypeInt;
-import types.TypeRef;
 import utils.Coordinates;
 import utils.Pair;
 import compiler.CodeBlock;
-import utils.Types;
 import utils.values.IValue;
 
 public class ASTDef implements ASTNode {
 
+    public IType type;
     private List<Pair> list;
     private ASTNode	body;
-
-    private Map<IType, Types> types;
 
     public ASTDef (List<Pair> init, ASTNode	body){
         list = init;
         this.body = body;
-
-        types = new HashMap<>();
-        types.put(new TypeInt(), null);
-        types.put(new TypeBool(), null);
-        //types.put(new TypeRef(), null);
+        type = null;
     }
 
 
@@ -74,10 +63,8 @@ public class ASTDef implements ASTNode {
 
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
         EnvironmentCompiler novo = e.beginScope();
-        EnvironmentType tnovo = t.beginScope();
-        IType val;
 
         //ja comeca com 1 enviroment, por isso o primeiro def sera a frame 0
         int numberFrame = e.depth() - 1;
@@ -90,15 +77,14 @@ public class ASTDef implements ASTNode {
         int numberVar = 0;
         for(Pair p: list){
 
-            if(p.getExp() instanceof ASTNum){
-                c.emit("aload_3");
-            }
-            p.getExp().compile(c, novo, tnovo);
-            val = p.getExp().typecheck(t);
+            //mudar isto?
+//            if(p.getExp() instanceof ASTNum){
+//                c.emit("aload_3");
+//            }
+            c.emit("aload_3");
+            p.getExp().compile(c, novo);
 
-           // types.put(val, new Types(p.getId(), ...) );
-
-            c.emit("putfield frame_" + numberFrame + "/v" + numberVar + " I;");
+            c.emit("putfield frame_" + numberFrame + "/v" + numberVar + " Ljava/lang/Object;");
 
             String varName = "v" + numberVar;
             novo.assoc(p.getId(), new Coordinates(novo.depth(), varName));
@@ -106,11 +92,16 @@ public class ASTDef implements ASTNode {
             numberVar++;
         }
 
-        body.compile(c, novo, tnovo);
+        body.compile(c, novo);
 
         c.emit(framePopOf(numberFrame));
         novo.endScope();
 
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 
     private String frameInit(int numberFrame){

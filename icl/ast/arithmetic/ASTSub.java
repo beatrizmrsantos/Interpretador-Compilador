@@ -12,14 +12,9 @@ import utils.values.VInt;
 
 public class ASTSub implements ASTNode {
 
-    ASTNode lhs, rhs;
+    private ASTNode lhs, rhs;
 
-//    public int eval(EnvironmentInterpreter e)
-//    {
-//        int v1 = lhs.eval(e);
-//        int v2 = rhs.eval(e);
-//        return v1-v2;
-//    }
+    public IType type;
 
     @Override
     public IValue eval(EnvironmentValue e) {
@@ -43,7 +38,8 @@ public class ASTSub implements ASTNode {
             IType t2 = rhs.typecheck(e);
 
             if	(t2	instanceof TypeInt) {
-                return t1;
+                type = t1;
+                return type;
             }
         }
 
@@ -53,11 +49,17 @@ public class ASTSub implements ASTNode {
     public ASTSub(ASTNode l, ASTNode r)
     {
         lhs = l; rhs = r;
+        type = null;
     }
 
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t)	{
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e)	{
+        lhs.compile(c, e);
+        rhs.compile(c, e);
         c.emit("isub");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

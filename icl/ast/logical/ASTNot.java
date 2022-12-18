@@ -14,10 +14,12 @@ import utils.values.VInt;
 
 public class ASTNot implements ASTNode {
 
+    public IType type;
     ASTNode lhs;
 
     public ASTNot(ASTNode l) {
         lhs = l;
+        type = null;
     }
 
     @Override
@@ -35,14 +37,21 @@ public class ASTNot implements ASTNode {
         IType t1 = lhs.typecheck(e);
 
         if	(t1	instanceof TypeBool) {
-            return t1;
+            type = t1;
+            return type;
         }
 
         throw new Error("Illegal types to ~ operator");
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        lhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        lhs.compile(c, e);
+        c.emit("ineg");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

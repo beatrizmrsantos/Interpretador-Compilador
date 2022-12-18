@@ -12,11 +12,14 @@ import utils.values.VInt;
 
 public class ASTNeg implements ASTNode {
 
+    public IType type;
+
     ASTNode lhs;
 
     public ASTNeg(ASTNode l)
     {
         lhs = l;
+        type = null;
     }
 
     @Override
@@ -34,14 +37,20 @@ public class ASTNeg implements ASTNode {
         IType t1 = lhs.typecheck(e);
 
         if	(t1	instanceof TypeInt) {
-            return t1;
+            type = t1;
+            return type;
         }
 
         throw new Error("Illegal types to neg operator");
     }
 
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t)	{
-        lhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e)	{
+        lhs.compile(c, e);
         c.emit("ineg");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

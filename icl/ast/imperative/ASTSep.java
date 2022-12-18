@@ -13,10 +13,13 @@ import utils.values.IValue;
 //esta classe e para o ; que separa expressoes
 public class ASTSep implements ASTNode {
 
+    public IType type;
+
     private ASTNode lhs, rhs;
 
     public ASTSep(ASTNode l, ASTNode r) {
         lhs = l; rhs = r;
+        type = null;
     }
 
     @Override
@@ -33,12 +36,19 @@ public class ASTSep implements ASTNode {
             throw new Error("illegal arguments to ; operator");
         }
 
-        return rhs.typecheck(e);
+        type = rhs.typecheck(e);
+        return type;
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
-        lhs.compile(c, e, t);
-        rhs.compile(c, e, t);
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        lhs.compile(c, e);
+        c.emit("pop");
+        rhs.compile(c, e);
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

@@ -13,10 +13,12 @@ import utils.values.VBool;
 
 public class ASTBool implements ASTNode{
 
+    public IType type;
     private boolean v;
 
     public ASTBool(boolean n) {
         v = n;
+        type = null;
     }
 
     @Override
@@ -25,15 +27,21 @@ public class ASTBool implements ASTNode{
     }
 
     public IType typecheck(EnvironmentType e) {
-        return new TypeBool();
+        type = new TypeBool();
+        return type;
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
         if (v) {
-            c.emit("goto TL");
+            c.emit("iconst_1");
         } else {
-            c.emit("goto FL");
+            c.emit("iconst_0");
         }
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }

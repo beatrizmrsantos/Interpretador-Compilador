@@ -1,5 +1,10 @@
 package compiler;
 
+import types.IType;
+import types.TypeBool;
+import types.TypeInt;
+import types.TypeRef;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,11 +14,20 @@ public class CodeBlock {
     private LinkedList<String> code;
     private LinkedList<String> classHeader;
     private Map<Integer,Integer> frames;
+    private Map<IType, CellReference> references;
+
+    private int currLabel;
 
     public CodeBlock(){
         code = new LinkedList<>();
         classHeader = new LinkedList<>();
         frames = new HashMap<>();
+        currLabel = 1;
+        references = new HashMap<>();
+    }
+
+    public int getLabel() {
+        return currLabel++;
     }
 
     public void emit(String opcode){
@@ -27,6 +41,7 @@ public class CodeBlock {
         int numberFrames = frames.size();
 
         dumpMainFile(filename);
+        dumpFrameRef();
 
         if(numberFrames > 0) {
             for (int i = 0; i < numberFrames; i++) {
@@ -47,7 +62,7 @@ public class CodeBlock {
 
     //faz as classes de cada enviroment
     private void dumpFrame(int numberframe) throws FileNotFoundException {
-        PrintStream file = new PrintStream("compiler" + numberframe + ".j");
+        PrintStream file = new PrintStream("frame_" + numberframe + ".j");
 
         String s1 = ".class public frame_" + numberframe + "\n" +
                     ".super java/lang/Object\n";
@@ -69,10 +84,14 @@ public class CodeBlock {
         int numVariables = frames.get(numberframe);
 
         for(int i = 0; i < numVariables; i++){
-            String s2 = ".field public v" + i + " I\n";
+            String s2 = ".field public v" + i + " Ljava/lang/Object;\n";
             classHeader.addLast(s2);
         }
 
+        constructor();
+    }
+
+    private void constructor(){
         String s3 = "\n.method public <init>()V\n" +
                 "aload_0\n" +
                 "invokenonvirtual java/lang/Object/<init>()V\n" +
@@ -80,6 +99,30 @@ public class CodeBlock {
                 ".end method\n\n";
 
         classHeader.addLast(s3);
+
+    }
+
+    //criacao dos ficheiros de cada referencia existente (int, bool ou cell)
+    private void dumpFrameRef() throws FileNotFoundException {
+
+        for (Map.Entry<IType, CellReference> entry : references.entrySet()) {
+            CellReference reference = entry.getValue();
+            String className = reference.className();
+
+            //criacao do ficheiro
+            String filename = className + ".j";
+            PrintStream file = new PrintStream(filename);
+
+            String s1 = ".class public " + className + "\n" +
+                    ".super java/lang/Object\n" + ".field public value " + reference.getType() + ";\n";
+            classHeader.addLast(s1);
+
+            constructor();
+
+            file.print(convertListToString(classHeader));
+            classHeader.clear();
+        }
+
     }
 
     private String convertListToString(LinkedList<String> list){
@@ -90,6 +133,34 @@ public class CodeBlock {
         }
 
         return res;
+    }
+
+    public CellReference putAndGetReference(IType type){
+
+        if(type instanceof TypeRef) {
+            CellReference ref = references.get(((TypeRef) type).getRefType());
+            if (ref == null) {
+                ref = new CellReference(this, ((TypeRef) type).getRefType());
+                references.put(((TypeRef) type).getRefType(), ref);
+            }
+            return ref;
+        }
+
+        CellReference ref = references.get(type);
+        if (ref == null) {
+            if (type instanceof TypeInt) {
+                ref = new CellReference(this, new TypeInt());
+                references.put(new TypeInt(), ref);
+            }
+
+            if (type instanceof TypeBool) {
+                ref = new CellReference(this, new TypeBool());
+                references.put(new TypeBool(), ref);
+            }
+        }
+
+        return ref;
+
     }
 
     private String beforeExp = ".class public Header\n" +

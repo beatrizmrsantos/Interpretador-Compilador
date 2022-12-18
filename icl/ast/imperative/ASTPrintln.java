@@ -1,6 +1,7 @@
 package ast.imperative;
 
 import ast.ASTNode;
+import compiler.CellReference;
 import compiler.CodeBlock;
 import compiler.Memory;
 import environment.EnvironmentCompiler;
@@ -13,10 +14,13 @@ import utils.values.VNull;
 
 public class ASTPrintln implements ASTNode {
 
+    public IType type;
+
     private ASTNode	arg;
 
     public ASTPrintln(ASTNode value){
         arg = value;
+        type = null;
     }
 
     @Override
@@ -29,15 +33,22 @@ public class ASTPrintln implements ASTNode {
     }
 
     public IType typecheck(EnvironmentType e) {
-
-        return arg.typecheck(e);
+        type = arg.typecheck(e);
+        return type;
     }
 
     @Override
-    public void compile(CodeBlock c, EnvironmentCompiler e, EnvironmentType t) {
+    public void compile(CodeBlock c, EnvironmentCompiler e) {
+        CellReference ref = c.putAndGetReference(arg.getType());
+
         c.emit("getstatic java/lang/System/out Ljava/io/PrintStream;");
-        arg.compile(c, e, t);
-        c.emit("invokestatic java/lang/String/valueOf(I)Ljava/lang/String;");
+        arg.compile(c, e);
+        c.emit("invokestatic java/lang/String/valueOf(" + ref.getType() + ")Ljava/lang/String;");
         c.emit("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
+    }
+
+    @Override
+    public IType getType() {
+        return type;
     }
 }
