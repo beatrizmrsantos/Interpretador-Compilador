@@ -9,7 +9,10 @@ public class TypeInt implements IType {
 	}
 
 	public String getName(CodeBlock c) {
-		c.putAndGetReference(this);
 		return "I";
+	}
+
+	public String getNameClasse(CodeBlock c) {
+		return "int";
 	}
 }

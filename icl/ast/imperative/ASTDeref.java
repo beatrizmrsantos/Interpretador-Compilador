@@ -39,7 +39,8 @@ public class ASTDeref implements ASTNode {
         IType t1 = value.typecheck(e);
 
         if (t1 instanceof TypeRef) {
-            return ((TypeRef) t1).getRefType();
+            type = ((TypeRef) t1).getRefType();
+            return type;
         }
 
         throw new Error("illegal arguments to ! operator");

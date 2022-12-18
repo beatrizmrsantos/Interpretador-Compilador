@@ -68,7 +68,7 @@ public class CodeBlock {
                     ".super java/lang/Object\n";
 
         if(numberframe == 0){
-            s1 += ".field public sl Ljava/lang/Object;\n";
+            s1 += ".field public sl \n";
         } else {
             s1 += ".field public sl Lframe_" + (numberframe - 1) + ";\n";
         }
@@ -93,9 +93,9 @@ public class CodeBlock {
 
     private void constructor(){
         String s3 = "\n.method public <init>()V\n" +
-                "aload_0\n" +
-                "invokenonvirtual java/lang/Object/<init>()V\n" +
-                "return\n\n" +
+                "   aload_0\n" +
+                "   invokenonvirtual java/lang/Object/<init>()V\n" +
+                "   return\n\n" +
                 ".end method\n\n";
 
         classHeader.addLast(s3);
@@ -164,8 +164,7 @@ public class CodeBlock {
     }
 
     private String beforeExp = ".class public Header\n" +
-            ".super java/lang/Object\n\n;\n" +
-            "; standard initializer\n" +
+            ".super java/lang/Object\n" +
             ".method public <init>()V\n" +
             "   aload_0\n" +
             "   invokenonvirtual java/lang/Object/<init>()V\n" +
@@ -173,20 +172,14 @@ public class CodeBlock {
             ".end method\n\n" +
             ".method public static main([Ljava/lang/String;)V\n\n" +
             "       ; set limits used by this method\n" +
-            "       .limit locals  1 \n" +
-            "       .limit stack 256\n\n" +
-            "       ; setup local variables:\n\n" +
-            "       ;    1 - the PrintStream object held in java.lang.System.out\n\n" +
-            "       getstatic java/lang/System/out Ljava/io/PrintStream;\n\n" +
-            "       ; place bytecodes here\n\n" +
+            "       .limit locals  10\n" +
+            "       .limit stack 256\n" +
+            "       ; initialize SL variable to null\n" +
+            "       aconst_null\n" + "       astore_3\n" +
             "       ; START   \n\n";
 
-    private String afterExp = "\n\t\t; END \n\n\n" +
-            "       ; convert to String;\n" +
-            "       invokestatic java/lang/String/valueOf(I)Ljava/lang/String;\n\n" +
-            "       ; call println \n" +
-            "       invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n\n" +
-            "       return\n\n" +
+    private String afterExp = "\n\t\t; END\n" +
+            "       return\n" +
             ".end method\n";
 
 }

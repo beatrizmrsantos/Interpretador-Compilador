@@ -53,6 +53,7 @@ public class ASTIf implements ASTNode {
             || t2.equals(new Error()) || t3.equals(new Error())) {
                 new Error("Illegal types to if else operators");
             }
+            type = t2;
             return t2;
         }
 

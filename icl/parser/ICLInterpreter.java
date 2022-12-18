@@ -3,12 +3,10 @@ package parser;
 import ast.*;
 import environment.EnvironmentType;
 import environment.EnvironmentValue;
-import types.IType;
 import utils.values.IValue;
 import utils.values.VNull;
 
 import java.io.*;
-import java.util.stream.Collectors;
 
 public class ICLInterpreter {
 

@@ -6,11 +6,12 @@ import types.TypeInt;
 
 public class CellReference {
 
-    private String type;
+    private String name;
     private String typeJ;
 
     public CellReference(CodeBlock c, IType type) {
-        this.type = type.getName(c);
+        this.typeJ = type.getName(c);
+        this.name = type.getNameClasse(c);
         getTypeJ(c, type);
     }
 
@@ -23,11 +24,12 @@ public class CellReference {
     }
 
     public String getType() {
-        return type;
+        return typeJ;
     }
 
     public String className() {
-        return "ref_of_" + type;
+        return "ref_of_" + name;
     }
+
 
 }

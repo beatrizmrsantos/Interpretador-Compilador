@@ -18,4 +18,8 @@ public class TypeRef implements IType {
 		return c.putAndGetReference(this).className();
 	}
 
+	public String getNameClasse(CodeBlock c) {
+		return c.putAndGetReference(this).className();
+	}
+
 }

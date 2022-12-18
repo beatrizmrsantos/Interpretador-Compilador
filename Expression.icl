@@ -1,1 +1,1 @@
-1+1;2;;
+{let a = new 5; let b = new a; a := !a + 1; println !a; println !b};;

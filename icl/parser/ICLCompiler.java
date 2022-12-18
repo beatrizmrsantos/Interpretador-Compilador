@@ -1,25 +1,29 @@
 package parser;
 
-
 import ast.*;
-import environment.EnvironmentCompiler;
-
 import java.io.*;
-import compiler.CodeBlock;
-import environment.EnvironmentType;
-import types.IType;
+import compiler.*;
+import environment.*;
 
 public class ICLCompiler {
 
     public static void main(String	args[]) throws IOException {
 
-        //le da linha de comando
-        String filenameInput = args[0];
-        String[] file = filenameInput.split("\\.");
-        String filename = file[0];
+        String filenameInput = null;
+        String filename = null;
 
-        if (!file[1].equals(".icl")) {
-            System.out.println("Warning: Code file does not have a .icl extension.");
+        try {
+            //le da linha de comando
+            filenameInput = args[0];
+
+            String[] file = filenameInput.split("\\.");
+            filename = file[0];
+
+            if (!file[1].equals("icl")) {
+                System.out.println("Warning: Code file does not have a .icl extension.");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+           System.out.println("Warning: No code file provided as argument.");
         }
 
         InputStream in = null;
@@ -43,18 +47,19 @@ public class ICLCompiler {
                 code.dump(filename);
 
                 e.endScope();
+                t.endScope();
                 in.close();
 
             } catch (ParseException pe) {
                 System.out.println ("Syntax Error: " + pe);
                 parser.ReInit(System.in);
 
-            } catch (Exception exception) {
-                System.out.println ("crash" + exception);
-                parser.ReInit(System.in);
-
+//            } catch (Exception exception) {
+//               // System.out.println ("crash" + exception);
+//                parser.ReInit(System.in);
+//
             } catch (TokenMgrError error){
-                System.out.println (error);
+                //System.out.println (error);
             }
 
     }
