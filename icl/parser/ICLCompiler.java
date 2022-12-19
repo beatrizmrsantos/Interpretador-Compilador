@@ -7,7 +7,7 @@ import environment.*;
 
 public class ICLCompiler {
 
-    public static void main(String	args[]) throws IOException {
+    public static void main(String	args[]) {
 
         String filenameInput = null;
         String filename = null;
