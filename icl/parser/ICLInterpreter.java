@@ -16,21 +16,12 @@ public class ICLInterpreter {
         ASTNode exp;
 
         EnvironmentValue e = new EnvironmentValue(null);
-        //EnvironmentType e = new EnvironmentType(null);
 
         while (true) {
             try {
                 System.out.print("> ");
                 exp = parser.Start();
-
-                IValue n = exp.eval(e);
-                if(! (n instanceof VNull) ){
-                    System.out.println( n.toStr() );
-                }
-
-//                IType n = exp.typecheck(e);
-//                System.out.println(n);
-
+                exp.eval(e);
                 e.endScope();
 
             } catch (ParseException pe) {

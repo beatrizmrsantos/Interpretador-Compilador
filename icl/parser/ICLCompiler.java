@@ -54,10 +54,10 @@ public class ICLCompiler {
                 System.out.println ("Syntax Error: " + pe);
                 parser.ReInit(System.in);
 
-//            } catch (Exception exception) {
-//               // System.out.println ("crash" + exception);
-//                parser.ReInit(System.in);
-//
+            } catch (Exception exception) {
+               // System.out.println ("crash" + exception);
+                parser.ReInit(System.in);
+
             } catch (TokenMgrError error){
                 //System.out.println (error);
             }
