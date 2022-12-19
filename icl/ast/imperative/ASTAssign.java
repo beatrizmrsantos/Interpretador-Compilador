@@ -53,11 +53,15 @@ public class ASTAssign implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e) {
-        CellReference ref = c.putAndGetReference(lhs.getType());
+        CellReference ref = c.putAndGetReference(rhs.getType());
+
+        rhs.compile(c, e);
+        c.emit("dup");
 
         lhs.compile(c, e);
-        rhs.compile(c, e);
 
+        c.emit("checkcast " + ref.className());
+        c.emit("swap");
         c.emit("putfield " + ref.className() + "/v " + ref.getType());
     }
 

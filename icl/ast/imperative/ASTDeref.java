@@ -49,11 +49,11 @@ public class ASTDeref implements ASTNode {
 
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e) {
-        value.compile(c, e);
         CellReference ref = c.putAndGetReference(value.getType());
+        value.compile(c, e);
 
         c.emit("checkcast " + ref.className());
-        c.emit("getfield ref_of_" + ref.className() + "/v " + ref.getType());
+        c.emit("getfield " + ref.className() + "/v " + ref.getType());
     }
 
     @Override

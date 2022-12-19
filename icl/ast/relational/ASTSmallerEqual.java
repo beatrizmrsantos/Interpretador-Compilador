@@ -62,8 +62,6 @@ public class ASTSmallerEqual implements ASTNode {
         lhs.compile(c, e);
         rhs.compile(c, e);
 
-        c.emit("isub");
-
         c.emit("if_icmple " + l1);
         c.emit("iconst_0");
         c.emit("goto " + l2);

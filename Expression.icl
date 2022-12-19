@@ -1,1 +1,10 @@
-{let a = new 5; let b = new a; a := !a + 1; println !a; println !b};;
+{let m = new 5666;
+   while !m > 1 {
+    if (2*(!m / 2) == !m) {
+     m := !m / 2
+    } {
+     m := 3*!m+1
+    };
+    println !m
+  }
+};;

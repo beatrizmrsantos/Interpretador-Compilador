@@ -1,4 +1,5 @@
 package ast;
+import compiler.CellReference;
 import compiler.CodeBlock;
 import environment.EnvironmentCompiler;
 import environment.EnvironmentInterpreter;

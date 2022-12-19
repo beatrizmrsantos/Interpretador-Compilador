@@ -68,7 +68,7 @@ public class CodeBlock {
                     ".super java/lang/Object\n";
 
         if(numberframe == 0){
-            s1 += ".field public sl \n";
+            s1 += ".field public sl " + "Ljava/lang/Object;\n";
         } else {
             s1 += ".field public sl Lframe_" + (numberframe - 1) + ";\n";
         }

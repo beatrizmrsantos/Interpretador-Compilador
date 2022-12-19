@@ -62,8 +62,6 @@ public class ASTSmaller implements ASTNode {
         lhs.compile(c, e);
         rhs.compile(c, e);
 
-        c.emit("isub");
-
         c.emit("if_icmplt " + l1);
         c.emit("iconst_0");
         c.emit("goto " + l2);

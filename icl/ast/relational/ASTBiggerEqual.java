@@ -63,8 +63,6 @@ public class ASTBiggerEqual implements ASTNode {
         lhs.compile(c, e);
         rhs.compile(c, e);
 
-        c.emit("isub");
-
         c.emit("if_icmpge " + l1);
         c.emit("iconst_0");
         c.emit("goto " + l2);

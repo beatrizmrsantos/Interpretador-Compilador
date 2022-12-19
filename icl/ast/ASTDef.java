@@ -81,7 +81,7 @@ public class ASTDef implements ASTNode {
 //            if(p.getExp() instanceof ASTNum){
 //                c.emit("aload_3");
 //            }
-            c.emit("aload_3");
+            //c.emit("aload_3");
             p.getExp().compile(c, novo);
 
             c.emit("putfield frame_" + numberFrame + "/v" + numberVar + " Ljava/lang/Object;");
