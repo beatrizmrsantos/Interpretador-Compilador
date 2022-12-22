@@ -29,49 +29,67 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int LBR = 13;
   /** RegularExpression Id. */
-  int PV = 14;
+  int END = 14;
   /** RegularExpression Id. */
-  int TERM = 15;
+  int SEMICOLON = 15;
   /** RegularExpression Id. */
-  int BOOL = 16;
+  int COMMA = 16;
   /** RegularExpression Id. */
-  int OR = 17;
+  int ARROW = 17;
   /** RegularExpression Id. */
-  int AND = 18;
+  int COLON = 18;
   /** RegularExpression Id. */
-  int NOT = 19;
+  int TERM = 19;
   /** RegularExpression Id. */
-  int EQUAL = 20;
+  int BOOL = 20;
   /** RegularExpression Id. */
-  int NOTEQUAL = 21;
+  int OR = 21;
   /** RegularExpression Id. */
-  int BIG = 22;
+  int AND = 22;
   /** RegularExpression Id. */
-  int BIGEQUAL = 23;
+  int NOT = 23;
   /** RegularExpression Id. */
-  int SMALLEQUAL = 24;
+  int EQUAL = 24;
   /** RegularExpression Id. */
-  int SMALL = 25;
+  int NOTEQUAL = 25;
   /** RegularExpression Id. */
-  int EQ = 26;
+  int BIG = 26;
   /** RegularExpression Id. */
-  int ASSIGN = 27;
+  int BIGEQUAL = 27;
   /** RegularExpression Id. */
-  int EXCL = 28;
+  int SMALLEQUAL = 28;
   /** RegularExpression Id. */
-  int LET = 29;
+  int SMALL = 29;
   /** RegularExpression Id. */
-  int MUT = 30;
+  int EQ = 30;
   /** RegularExpression Id. */
-  int NEW = 31;
+  int ASSIGN = 31;
   /** RegularExpression Id. */
-  int WHILE = 32;
+  int EXCL = 32;
   /** RegularExpression Id. */
-  int IF = 33;
+  int LET = 33;
   /** RegularExpression Id. */
-  int PRINTLN = 34;
+  int MUT = 34;
   /** RegularExpression Id. */
-  int Id = 35;
+  int NEW = 35;
+  /** RegularExpression Id. */
+  int WHILE = 36;
+  /** RegularExpression Id. */
+  int IF = 37;
+  /** RegularExpression Id. */
+  int PRINTLN = 38;
+  /** RegularExpression Id. */
+  int FUN = 39;
+  /** RegularExpression Id. */
+  int INTTYPE = 40;
+  /** RegularExpression Id. */
+  int BOOLTYPE = 41;
+  /** RegularExpression Id. */
+  int REFTYPE = 42;
+  /** RegularExpression Id. */
+  int FUNTYPE = 43;
+  /** RegularExpression Id. */
+  int Id = 44;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -92,7 +110,11 @@ public interface ParserConstants {
     "\")\"",
     "\"{\"",
     "\"}\"",
+    "\"end\"",
     "\";\"",
+    "\",\"",
+    "\"->\"",
+    "\":\"",
     "\";;\"",
     "<BOOL>",
     "\"||\"",
@@ -113,6 +135,11 @@ public interface ParserConstants {
     "\"while\"",
     "\"if\"",
     "\"println\"",
+    "\"fun\"",
+    "\"Int\"",
+    "\"Bool\"",
+    "\"Ref\"",
+    "\"Fun\"",
     "<Id>",
   };
 

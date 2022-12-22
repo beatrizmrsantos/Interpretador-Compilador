@@ -324,10 +324,5 @@ ASTNode Fact() :
 	{
 		return new ASTIf(e1,e2);
 	}
-    |
-    < FUN > (x1 = <Id> <COLON> t1 = Type() { l.add(new ASTArg(x1.image, t1)); } ( <COMMA> x2 = <Id> <COLON> t2 = Type() { l.add(new ASTArg(x2.image, t2)); } )* )? < ARROW > e2 = Seq() < END >
-    {
-        return new ASTFun(e2, l);
-    }
 }
 

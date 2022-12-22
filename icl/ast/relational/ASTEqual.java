@@ -31,9 +31,11 @@ public class ASTEqual implements ASTNode {
         IValue v2 = rhs.eval(e);
 
         if (v1 instanceof VInt && v2 instanceof VInt) {
-            return new VBool(((VInt) v1).get() == ((VInt) v2).get());
+            return new VBool(((VInt) v1).get()
+                    == ((VInt) v2).get());
         } else if (v1 instanceof VBool && v2 instanceof VBool) {
-            return new VBool(((VBool) v1).get() == ((VBool) v2).get());
+            return new VBool(((VBool) v1).get()
+                    == ((VBool) v2).get());
         }
 
         throw new Error("Illegal types to == operator");
@@ -43,7 +45,8 @@ public class ASTEqual implements ASTNode {
         IType t1 = lhs.typecheck(e);
         IType t2 = rhs.typecheck(e);
 
-        if	((t1 instanceof TypeBool && t2 instanceof TypeBool) || (t1 instanceof TypeInt && t2 instanceof TypeInt)) {
+        if	((t1 instanceof TypeBool && t2 instanceof TypeBool)
+                || (t1 instanceof TypeInt && t2 instanceof TypeInt)) {
             type = new TypeBool();
             return type;
         }

@@ -47,7 +47,7 @@ public class ASTNot implements ASTNode {
     @Override
     public void compile(CodeBlock c, EnvironmentCompiler e) {
         lhs.compile(c, e);
-        c.emit("ineg");
+        c.emit("ineg"); //ineg aqui tbm??
     }
 
     @Override

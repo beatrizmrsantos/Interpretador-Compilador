@@ -1,11 +1,12 @@
 package parser;
 
-import ast.*;
+import  ast.*;
 import java.io.*;
 import compiler.*;
 import environment.*;
 
 public class ICLCompiler {
+    private static final String FILENAME = "Expression1.icl";
 
     public static void main(String	args[]) {
 
@@ -23,7 +24,11 @@ public class ICLCompiler {
                 System.out.println("Warning: Code file does not have a .icl extension.");
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-           System.out.println("Warning: No code file provided as argument.");
+            filenameInput = FILENAME;
+            String[] file = filenameInput.split("\\.");
+            filename = file[0];
+            System.out.println(
+                    "Warning: No code file provided as argument. Proceeding with the default file name Expression1.icl");
         }
 
         InputStream in = null;

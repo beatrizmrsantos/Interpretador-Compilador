@@ -43,7 +43,8 @@ public class ASTAssign implements ASTNode {
         IType t2 = rhs.typecheck(e);
 
         if	(t1 instanceof TypeRef
-                && ((TypeRef) t1).getRefType().getClass().getSimpleName().equals(t2.getClass().getSimpleName())) {
+                && ((TypeRef) t1).getRefType().getClass().
+                getSimpleName().equals(t2.getClass().getSimpleName())) {
             type = t2;
             return t2;
         }

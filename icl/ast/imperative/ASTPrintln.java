@@ -26,9 +26,7 @@ public class ASTPrintln implements ASTNode {
     @Override
     public IValue eval(EnvironmentValue e) {
         IValue v1 = arg.eval(e);
-
         System.out.println(v1.toStr());
-
         return new VNull(null);
     }
 

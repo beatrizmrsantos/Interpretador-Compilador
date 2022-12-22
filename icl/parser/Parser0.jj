@@ -6,9 +6,13 @@ import ast.arithmetic.*;
 import ast.relational.*;
 import ast.imperative.*;
 import ast.logical.*;
+import types.*;
+import utils.values.*;
 import utils.Pair;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
+
 
 /** ID lister.*/
 public class Parser {
@@ -47,7 +51,15 @@ TOKEN :
   |
   < LBR: "}" >
   |
-  < PV: ";" >
+  < END : "end" >
+  |
+  < SEMICOLON: ";" >
+  |
+  < COMMA: "," >
+  |
+  < ARROW: "->" >
+  |
+  < COLON: ":" >
   |
   < TERM: ";;" >
   |
@@ -89,9 +101,20 @@ TOKEN :
   |
   < PRINTLN: "println" >
   |
+  < FUN: "fun" >
+  |
+  < INTTYPE: "Int" >
+  |
+  < BOOLTYPE: "Bool" >
+  |
+  < REFTYPE: "Ref" >
+  |
+  < FUNTYPE: "Fun" >
+  |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
 
 }
+
 
 ASTNode Start():
 { ASTNode t;}
@@ -104,7 +127,7 @@ ASTNode Sep():
 {ASTNode t1, t2; }
 {
   t1 = Assign()
-  	( <PV>  t2 = Assign()
+  	( <SEMICOLON>  t2 = Assign()
   		{ t1 = new ASTSep(t1,t2);}
  	) *
   {return t1;}
@@ -171,6 +194,48 @@ ASTNode Logic() :
 }
 
 
+IType Type():
+{ IType t1; List<IType> l = new ArrayList(); }
+{
+	<INTTYPE>
+	{
+		return new TypeInt();
+	}
+	|
+	<BOOLTYPE>
+	{
+		return new TypeBool();
+	}
+	|
+	<REFTYPE> <LPAR> t1 = Type() <RPAR>
+	{
+		return new TypeRef(t1);
+	}
+	|
+	<FUNTYPE> <LPAR> t1 = Type() (<COMMA> { l.add(t1); } t1 = Type())* <RPAR>
+	{
+		return new TypeFun(l, t1);
+	}
+}
+
+ASTNode Call() :
+{ ASTNode e; List<ASTNode> l = null; }
+{
+	e = Fact() ( <LPAR> l = ExpList() <RPAR> { e = new ASTCall(l, e); } )*
+	{
+		return e;
+	}
+}
+
+List<ASTNode> ExpList() :
+{ ASTNode e1, e2; List<ASTNode> l = new ArrayList(); }
+{
+	(e1 = Sep() { l.add(e1); } (<COMMA> e2 = Sep() { l.add(e2); } )*)?
+	{
+		return l;
+	}
+}
+
 ASTNode Exp() :
 { Token op;
   ASTNode t1, t2; }
@@ -199,40 +264,48 @@ ASTNode Term() :
 
 
 ASTNode Fact() :
-{ Token n; 
-ASTNode t, t2, t3;
-List<Pair> l;
+{ Token tk, tk2;
+ASTNode n, n2, n3;
+IType t1, t2;
+List<Pair> listPairs = new LinkedList();
+List<ASTArg> listArgs = new LinkedList();
 boolean b = false;}
 { (
-    n=<Num> { t = new ASTNum(Integer.parseInt(n.image)); }
+    tk=<Num> { n = new ASTNum(Integer.parseInt(tk.image)); }
    |
-   <PRINTLN> t = Fact() { t = new ASTPrintln(t); }
+   <PRINTLN> n = Fact() { n = new ASTPrintln(n); }
    |
-    n=<Id> { t = new ASTId(n.image); }
+    tk=<Id> { n = new ASTId(tk.image); }
    |
-    n=<BOOL> { t = new ASTBool(Boolean.parseBoolean(n.image));}
+    tk=<BOOL> { n = new ASTBool(Boolean.parseBoolean(tk.image));}
    |
-   <MINUS> t=Fact() { t = new ASTNeg(t); }
+   <MINUS> n=Fact() { n = new ASTNeg(n); }
    	|
-   	<NOT> t=Fact() { t = new ASTNot(t);}
+   	<NOT> n=Fact() { n = new ASTNot(n);}
    	|
-   <EXCL> t=Fact() { t = new ASTDeref(t); }
+   <EXCL> n=Fact() { n = new ASTDeref(n); }
     |
-   <LPAR> t = Sep() <RPAR>
+   <LPAR> n = Sep() <RPAR>
    |
-    <RBR> { l = new LinkedList<>(); }
-                      ( <LET> (<MUT> { b=true; } )? n=<Id> <EQ> t=Assign() <PV>{ if(b){ t=new ASTNew(t); b=false;}
-                                                                                l.add(new Pair(n.image,t)); } )+
-                      t=Sep() <LBR>
-                      {t = new ASTDef(l,t);}
+   <RBR> { listPairs = new LinkedList<>(); }
+                      ( <LET> (<MUT> { b=true; } )? tk=<Id> <EQ> n=Assign() <SEMICOLON>{ if(b){ n=new ASTNew(n); b=false;}
+                                                                                listPairs.add(new Pair(tk.image,n)); } )+
+                      n=Sep() <LBR>
+                      {n = new ASTDef(listPairs,n);}
     |
-   <NEW> t = Fact() { t = new ASTNew(t); }
+   <NEW> n = Fact() { n = new ASTNew(n); }
    |
-   <WHILE> t = Sep() <RBR> t2 = Sep() <LBR> { t = new ASTWhile(t,t2);}
+   <WHILE> n = Sep() <RBR> n2 = Sep() <LBR> { n = new ASTWhile(n,n2);}
    |
-   <IF> t = Sep() <RBR> t2 = Sep()<LBR> <RBR> t3 = Sep()<LBR> { t = new ASTIf(t,t2,t3); }
+   <IF> n = Sep() <RBR> n2 = Sep()<LBR> <RBR> n3 = Sep()<LBR> { n = new ASTIf(n,n2,n3); }
 
-       ){ return t; }
+       ){ return n; }
+    |
+    <FUN> (tk = <Id> <COLON> t1 = Type() { listArgs.add(new ASTArg(tk.image, t1)); } ( <COMMA> tk2 = <Id> <COLON> t2 = Type() {
+            listArgs.add(new ASTArg(tk2.image, t2)); } )* )? < ARROW > n = Sep()< END >
+               {
+                   return new ASTFun(n, listArgs);
+               }
 }
 
 

@@ -1,0 +1,1 @@
+{let a = new (5==5); a := ~!a; println !a};;
